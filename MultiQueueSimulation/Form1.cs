@@ -46,21 +46,6 @@ namespace MultiQueueSimulation
                     string line = lines[i].Trim();
                     ParseInputLine(lines, ref i, line);
                 }
-
-              
-
-                // Load inputs into the SimulationSystem
-                simulationSystem.NumberOfServers = numberOfServers;
-                simulationSystem.StoppingNumber = stoppingNumber;
-                simulationSystem.StoppingCriteria = (Enums.StoppingCriteria)stoppingCriteria;
-                simulationSystem.SelectionMethod = (Enums.SelectionMethod)selectionMethod;
-
-                // Populate InterarrivalDistribution
-                PopulateInterarrivalDistribution(simulationSystem);
-
-                // Populate Servers and their Service Distributions
-                PopulateServers(simulationSystem);
-
                 // Display data in the grid view
                 PopulateDataGridView();
             }
@@ -79,15 +64,15 @@ namespace MultiQueueSimulation
                     break;
 
                 case "StoppingCriteria":
-                    simulationSystem.StoppingCriteria = int.Parse(lines[++index].Trim());
+                    simulationSystem.StoppingCriteria = (Enums.StoppingCriteria)(int.Parse(lines[++index].Trim()));
                     break;
 
                 case "SelectionMethod":
-                    selectionMethod = int.Parse(lines[++index].Trim());
+                    simulationSystem.SelectionMethod = (Enums.SelectionMethod)(int.Parse(lines[++index].Trim()));
                     break;
-
                 case "InterarrivalDistribution":
-                    ParseDistribution(lines, ref index, ref timeDistributionsOfCustomers);
+                    List<TimeDistribution> L = simulationSystem.InterarrivalDistribution;
+                    ParseDistribution(lines, ref index, ref L );
                     break;
 
                 default:
@@ -95,12 +80,8 @@ namespace MultiQueueSimulation
                     {
                         int id = int.Parse(line.Substring(26));
                         Server newServer = new Server(id);
-                        servers.Add(newServer);
+                        simulationSystem.Servers.Add(newServer);
                         ParseDistribution(lines, ref index, ref newServer.TimeDistribution);
-                    }
-                    else
-                    {
-                        throw new Exception("undefind line: " + line);
                     }
                     break;
             }
@@ -117,81 +98,52 @@ namespace MultiQueueSimulation
                 int value = int.Parse(parts[0].Trim());
                 decimal probability = decimal.Parse(parts[1].Trim());
                 cumProb += probability;
-                endRange = (int)cumProb * numberOfCustomers;
+                endRange = (int)(cumProb * numberOfCustomers);
                 table.Add(new TimeDistribution(value, probability, cumProb, startRange, endRange));
                 startRange = endRange + 1;
             }
 
             index--; // Step back to allow the main loop to process correctly
         }
-
-        private void PopulateInterarrivalDistribution(SimulationSystem simulationSystem)
-        {
-            if (distributions.TryGetValue("InterarrivalDistribution", out var interarrival))
-            {
-                foreach (var (value, probability) in interarrival)
-                {
-                    simulationSystem.InterarrivalDistribution.Add(new TimeDistribution
-                    {
-                        Time = value,
-                        Probability = (decimal)probability
-                    });
-                }
-            }
-        }
-
-        private void PopulateServers(SimulationSystem simulationSystem)
-        {
-            for (int i = 1; i <= numberOfServers; i++)
-            {
-                string key = $"ServiceDistribution_Server{i}";
-                if (distributions.TryGetValue(key, out var serviceDistribution))
-                {
-                    Server server = new Server
-                    {
-                        ID = i, // Set the server ID
-                        TimeDistribution = new List<TimeDistribution>()
-                    };
-
-                    foreach (var (value, probability) in serviceDistribution)
-                    {
-                        server.TimeDistribution.Add(new TimeDistribution
-                        {
-                            Time = value,
-                            Probability = (decimal)probability
-                        });
-                    }
-
-                    simulationSystem.Servers.Add(server);
-                }
-            }
-        }
-
         private void PopulateDataGridView()
         {
-            // Clear previous data input
-            dataGridView1.Rows.Clear();
-            dataGridView1.Columns.Clear();
 
-            // Add columns
-            dataGridView1.Columns.Add("Key", "Key");
-            dataGridView1.Columns.Add("Value", "Value");
-            dataGridView1.Columns.Add("Probability", "Probability");
+            // Set header appearance (background color, font, etc.)
+            dgvInterarrival.EnableHeadersVisualStyles = false;
+            dgvInterarrival.ColumnHeadersDefaultCellStyle.BackColor = Color.SteelBlue;
+            dgvInterarrival.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvInterarrival.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10, FontStyle.Bold);
+            dgvInterarrival.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgvInterarrival.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            dgvInterarrival.ColumnHeadersHeight = 60; // Increase the height of the header
 
-            // Add rows
-            dataGridView1.Rows.Add("NumberOfServers", numberOfServers, "");
-            dataGridView1.Rows.Add("StoppingNumber", stoppingNumber, "");
-            dataGridView1.Rows.Add("StoppingCriteria", stoppingCriteria, "");
-            dataGridView1.Rows.Add("SelectionMethod", selectionMethod, "");
+            // Optional: Set the row style to alternate colors
+            dgvInterarrival.RowsDefaultCellStyle.BackColor = Color.White;
+            dgvInterarrival.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
 
-            // Add distribution data
-            foreach (var distribution in distributions)
+            // Configure DataGridView columns
+            dgvInterarrival.Columns.Clear();
+            dgvInterarrival.Columns.Add("InterarrivalTime", "Interarrival Time");
+            dgvInterarrival.Columns.Add("Probability", "Probability");
+            dgvInterarrival.Columns.Add("CumulativeProbability", "Cumulative Probability");
+            dgvInterarrival.Columns.Add("Range", "Range");
+
+            // Clear existing rows
+            dgvInterarrival.Rows.Clear();
+
+            // Load data into DataGridView from InterarrivalDistribution
+            foreach (var dist in simulationSystem.InterarrivalDistribution)
             {
-                foreach (var (value, probability) in distribution.Value)
-                {
-                    dataGridView1.Rows.Add(distribution.Key, value, probability);
-                }
+                // Add a new row for each TimeDistribution object
+                dgvInterarrival.Rows.Add(
+                    dist.Time,
+                    dist.Probability,
+                    dist.CummProbability,
+                    $"{dist.MinRange:D2}-{dist.MaxRange:D2}");
             }
+
+            // Optionally set properties of the DataGridView (e.g., column autosizing)
+            dgvInterarrival.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
     }
 }

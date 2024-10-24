@@ -8,12 +8,14 @@ namespace MultiQueueModels
 {
     public class Server
     {
-        public Server(int ID)
+        public Server()
         {
-            this.ID = ID;
             this.TimeDistribution = new List<TimeDistribution>();
         }
-
+        public Server(int ID) : this()
+        {
+            this.ID = ID;
+        }
         public int ID { get; set; }
         public decimal IdleProbability { get; set; }
         public decimal AverageServiceTime { get; set; } 
