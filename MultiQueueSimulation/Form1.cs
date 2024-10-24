@@ -12,14 +12,12 @@ using MultiQueueTesting;
 
 namespace MultiQueueSimulation
 {
+
     public partial class Form1 : Form
     {
         // Global variables
-        private int numberOfServers = 0;
-        private int stoppingNumber = 0;
-        private int stoppingCriteria = 0;
-        private int selectionMethod = 0;
-        private Dictionary<string, List<(int, double)>> distributions = new Dictionary<string, List<(int, double)>>();
+        private int numberOfCustomers = 100;
+
         // Create an instance of SimulationSystem
         SimulationSystem simulationSystem = new SimulationSystem();
         public Form1()
@@ -73,15 +71,15 @@ namespace MultiQueueSimulation
             switch (line)
             {
                 case "NumberOfServers":
-                    numberOfServers = int.Parse(lines[++index].Trim());
+                    simulationSystem.NumberOfServers = int.Parse(lines[++index].Trim());
                     break;
 
                 case "StoppingNumber":
-                    stoppingNumber = int.Parse(lines[++index].Trim());
+                    simulationSystem.StoppingNumber = int.Parse(lines[++index].Trim());
                     break;
 
                 case "StoppingCriteria":
-                    stoppingCriteria = int.Parse(lines[++index].Trim());
+                    simulationSystem.StoppingCriteria = int.Parse(lines[++index].Trim());
                     break;
 
                 case "SelectionMethod":
@@ -89,34 +87,42 @@ namespace MultiQueueSimulation
                     break;
 
                 case "InterarrivalDistribution":
-                    distributions["InterarrivalDistribution"] = ParseDistribution(lines, ref index);
+                    ParseDistribution(lines, ref index, ref timeDistributionsOfCustomers);
                     break;
 
                 default:
                     if (line.StartsWith("ServiceDistribution_Server"))
                     {
-                        string key = line;
-                        distributions[key] = ParseDistribution(lines, ref index);
+                        int id = int.Parse(line.Substring(26));
+                        Server newServer = new Server(id);
+                        servers.Add(newServer);
+                        ParseDistribution(lines, ref index, ref newServer.TimeDistribution);
+                    }
+                    else
+                    {
+                        throw new Exception("undefind line: " + line);
                     }
                     break;
             }
         }
-
-        private List<(int, double)> ParseDistribution(string[] lines, ref int index)
+        private void ParseDistribution(string[] lines, ref int index, ref List<TimeDistribution> table)
         {
-            List<(int, double)> distribution = new List<(int, double)>();
 
             // Read lines for the distribution until a new section
+            decimal cumProb = 0;
+            int startRange = 1, endRange;
             while (++index < lines.Length && lines[index].Contains(","))
             {
                 string[] parts = lines[index].Split(',');
                 int value = int.Parse(parts[0].Trim());
-                double probability = double.Parse(parts[1].Trim());
-                distribution.Add((value, probability));
+                decimal probability = decimal.Parse(parts[1].Trim());
+                cumProb += probability;
+                endRange = (int)cumProb * numberOfCustomers;
+                table.Add(new TimeDistribution(value, probability, cumProb, startRange, endRange));
+                startRange = endRange + 1;
             }
 
             index--; // Step back to allow the main loop to process correctly
-            return distribution;
         }
 
         private void PopulateInterarrivalDistribution(SimulationSystem simulationSystem)

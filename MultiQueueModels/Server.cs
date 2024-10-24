@@ -8,8 +8,9 @@ namespace MultiQueueModels
 {
     public class Server
     {
-        public Server()
+        public Server(int ID)
         {
+            this.ID = ID;
             this.TimeDistribution = new List<TimeDistribution>();
         }
 
