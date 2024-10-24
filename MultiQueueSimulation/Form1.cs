@@ -19,7 +19,7 @@ namespace MultiQueueSimulation
         private int numberOfCustomers = 100;
 
         // Create an instance of SimulationSystem
-        SimulationSystem simulationSystem = new SimulationSystem();
+        SimulationSystem simulationSystem;
         public Form1()
         {
             InitializeComponent();
@@ -34,6 +34,8 @@ namespace MultiQueueSimulation
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
+                // define new empty object
+                simulationSystem = new SimulationSystem();
                 // selected file path
                 string filePath = openFileDialog.FileName;
 
@@ -47,7 +49,7 @@ namespace MultiQueueSimulation
                     ParseInputLine(lines, ref i, line);
                 }
                 // Display data in the grid view
-                PopulateDataGridView();
+                viewInput();
             }
         }
 
@@ -105,45 +107,93 @@ namespace MultiQueueSimulation
 
             index--; // Step back to allow the main loop to process correctly
         }
-        private void PopulateDataGridView()
+        
+        private void initializeGridView(ref DataGridView dgview, ref List<String> cols)
         {
-
             // Set header appearance (background color, font, etc.)
-            dgvInterarrival.EnableHeadersVisualStyles = false;
-            dgvInterarrival.ColumnHeadersDefaultCellStyle.BackColor = Color.SteelBlue;
-            dgvInterarrival.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dgvInterarrival.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10, FontStyle.Bold);
-            dgvInterarrival.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dgvInterarrival.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-            dgvInterarrival.ColumnHeadersHeight = 60; // Increase the height of the header
+            dgview.EnableHeadersVisualStyles = false;
+            dgview.ColumnHeadersDefaultCellStyle.BackColor = Color.SteelBlue;
+            dgview.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgview.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10, FontStyle.Bold);
+            dgview.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgview.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            dgview.ColumnHeadersHeight = 60; // Increase the height of the header
 
             // Optional: Set the row style to alternate colors
-            dgvInterarrival.RowsDefaultCellStyle.BackColor = Color.White;
-            dgvInterarrival.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
+            dgview.RowsDefaultCellStyle.BackColor = Color.White;
+            dgview.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
 
+            // Make the DataGridView read-only to prevent user input
+            dgview.ReadOnly = true;
             // Configure DataGridView columns
-            dgvInterarrival.Columns.Clear();
-            dgvInterarrival.Columns.Add("InterarrivalTime", "Interarrival Time");
-            dgvInterarrival.Columns.Add("Probability", "Probability");
-            dgvInterarrival.Columns.Add("CumulativeProbability", "Cumulative Probability");
-            dgvInterarrival.Columns.Add("Range", "Range");
-
+            dgview.Columns.Clear();
+            foreach(String col in cols)
+            {
+                dgview.Columns.Add(col, col);
+            }
+            dgview.DefaultCellStyle.Font = new Font("Arial", 14, FontStyle.Regular);
+            dgview.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 12, FontStyle.Bold);
+        }
+        private void showInputGrid(int idx)
+        {
             // Clear existing rows
             dgvInterarrival.Rows.Clear();
-
+            List<TimeDistribution> lst;
+            if (idx == 0)
+            {
+                dgvInterarrival.Columns[0].HeaderText = "Interarrival Time";
+                lst = simulationSystem.InterarrivalDistribution;
+            }
+            else
+            {
+                dgvInterarrival.Columns[0].HeaderText = "Service Time";
+                lst = simulationSystem.Servers[idx - 1].TimeDistribution;
+            }
             // Load data into DataGridView from InterarrivalDistribution
-            foreach (var dist in simulationSystem.InterarrivalDistribution)
+            foreach (var dist in lst)
             {
                 // Add a new row for each TimeDistribution object
                 dgvInterarrival.Rows.Add(
                     dist.Time,
                     dist.Probability,
                     dist.CummProbability,
-                    $"{dist.MinRange:D2}-{dist.MaxRange:D2}");
+                    $"{dist.MinRange:D2} - {dist.MaxRange:D2}");
             }
-
             // Optionally set properties of the DataGridView (e.g., column autosizing)
             dgvInterarrival.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        }
+        private void viewInput()
+        {
+            List<String> inputCols = new List<String> { "Time" , "Probability", "CumulativeProbability", "Range" };
+            initializeGridView(ref dgvInterarrival, ref inputCols);
+            // Fill comboBox
+            serverBox.Items.Clear();
+            serverBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            serverBox.Font = new Font("Arial", 10, FontStyle.Regular);
+            serverBox.Items.Add("Inter arrival Distribution");
+            serverBox.SelectedIndex = 0;
+            for (int i = 0; i < simulationSystem.Servers.Count; i++)
+            {
+                serverBox.Items.Add("Server: " + simulationSystem.Servers[i].ID.ToString());
+            }
+            showInputGrid(0);
+        }
+
+        private void serverBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            showInputGrid(serverBox.SelectedIndex);
+        }
+
+        private void viewOutput()
+        {
+            outputGrid.Columns.Clear();
+            outputGrid.Rows.Clear();
+            List<String> outputCols = new List<String> { "test" };
+            initializeGridView(ref outputGrid, ref outputCols);
+        }
+        private void runButton_Click(object sender, EventArgs e)
+        {
+            viewOutput();            
         }
     }
 }
