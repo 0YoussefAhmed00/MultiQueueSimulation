@@ -114,7 +114,7 @@ namespace MultiQueueModels
             #region calculate all PerformanceMeasures
             PerformanceMeasures.MaxQueueLength = maxQLen;
             PerformanceMeasures.AverageWaitingTime = ((decimal) waitedTime)/ SimulationTable.Count;
-            PerformanceMeasures.WaitingProbability = numberOfWaitedCustomer / SimulationTable.Count;
+            PerformanceMeasures.WaitingProbability = ((decimal)numberOfWaitedCustomer) / SimulationTable.Count;
 
             foreach (Server server in Servers) {
                 server.AverageServiceTime = ((decimal)server.TotalWorkingTime) / server.TotalNumberOfCustomers;
