@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MultiQueueModels;
 using MultiQueueTesting;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace MultiQueueSimulation
 {
@@ -20,6 +21,11 @@ namespace MultiQueueSimulation
         public Form1()
         {
             InitializeComponent();
+            dgvInterarrival.Hide();
+            serverBox.Hide();
+            runButton.Hide();
+            outputGrid.Hide(); 
+            graph.Hide();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -124,6 +130,7 @@ namespace MultiQueueSimulation
             dgview.ReadOnly = true;
             // Configure DataGridView columns
             dgview.Columns.Clear();
+            dgview.Rows.Clear();
             foreach(String col in cols)
             {
                 dgview.Columns.Add(col, col);
@@ -161,10 +168,13 @@ namespace MultiQueueSimulation
         }
         private void viewInput()
         {
+            dgvInterarrival.Show();
+            runButton.Show();
             List<String> inputCols = new List<String> { "Time" , "Probability", "CumulativeProbability", "Range" };
             initializeGridView(ref dgvInterarrival, ref inputCols);
             // Fill comboBox
             serverBox.Items.Clear();
+            serverBox.Show();
             serverBox.DropDownStyle = ComboBoxStyle.DropDownList;
             serverBox.Font = new Font("Arial", 10, FontStyle.Regular);
             serverBox.Items.Add("Inter arrival Distribution");
@@ -180,17 +190,56 @@ namespace MultiQueueSimulation
         {
             showInputGrid(serverBox.SelectedIndex);
         }
-
         private void viewOutput()
         {
             outputGrid.Columns.Clear();
             outputGrid.Rows.Clear();
-            List<String> outputCols = new List<String> { "test" };
+            outputGrid.Show();
+            graph.Show();
+            // view output table
+            List<String> outputCols = new List<String> { "Customer Number", "Random Inter Arrival", "Inter Arrival Time",
+                "Arrival Time", "Random Service", "Assigned Server ID", "Service Start", "Service Time", "Service End",
+                "Time in Queue"};
             initializeGridView(ref outputGrid, ref outputCols);
+            foreach (SimulationCase row in simulationSystem.SimulationTable)
+            {
+                outputGrid.Rows.Add(row.CustomerNumber, row.RandomInterArrival, row.InterArrival, row.ArrivalTime,
+                    row.RandomService, row.AssignedServer.ID, row.StartTime, row.ServiceTime, row.EndTime, row.TimeInQueue);
+            }
+            dgvInterarrival.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+//            drawGraph();
+        }
+        private void drawGraph(int idx = 0)
+        {
+            // not finished
+            graph.Legends.Clear();
+
+            Series series = new Series();
+            series.ChartType = SeriesChartType.RangeColumn;
+            series.Color = System.Drawing.Color.Blue;
+
+            DataPoint rangePoint1 = new DataPoint();
+            rangePoint1.SetValueXY(3, 5);  // X range [3, 5]
+            rangePoint1.YValues = new double[] { 1 };  // Y value (height of the bar)
+            series.Points.Add(rangePoint1);
+
+            DataPoint rangePoint2 = new DataPoint();
+            rangePoint2.SetValueXY(8, 10);  // X range [8, 10]
+            rangePoint2.YValues = new double[] { 1 };  // Y value (height of the bar)
+            series.Points.Add(rangePoint2);
+
+            graph.ChartAreas[0].AxisX.Minimum = 0;
+            graph.ChartAreas[0].AxisY.Maximum = 1;
+            graph.ChartAreas[0].AxisY.Interval = 1;
+            graph.ChartAreas[0].AxisX.Title = "Time";
+            graph.ChartAreas[0].AxisY.Title = "B(t)";
+            graph.Series.Add(series);
+
         }
         private void runButton_Click(object sender, EventArgs e)
         {
             viewOutput();            
         }
+
     }
 }
