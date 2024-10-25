@@ -20,9 +20,28 @@ namespace MultiQueueSimulation
         // Create an instance of SimulationSystem
         SimulationSystem simulationSystem;
         String inputFileName;
+        private void PreprocessingVisualization()
+        {
+            // Graph
+            graph.ChartAreas[0].AxisX.Minimum = 0;
+            graph.ChartAreas[0].AxisY.Maximum = 1;
+            graph.ChartAreas[0].AxisY.Interval = 1;
+            graph.ChartAreas[0].AxisX.Title = "Time";
+            graph.ChartAreas[0].AxisY.Title = "B(t)";
+            graph.ChartAreas[0].AxisX.LabelStyle.Font = new Font("Arial", 10);
+            graph.ChartAreas[0].AxisX.TitleFont = new Font("Arial", 12);
+            graph.ChartAreas[0].AxisY.TitleFont = new Font("Arial", 12);
+            graph.ChartAreas[0].AxisX.LabelStyle.Angle = -90;
+            graph.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            graph.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
+
+
+
+        }
         public Form1()
         {
             InitializeComponent();
+            PreprocessingVisualization();
             dgvInterarrival.Hide();
             serverBox.Hide();
             runButton.Hide();
@@ -112,10 +131,10 @@ namespace MultiQueueSimulation
                 decimal probability = decimal.Parse(parts[1].Trim());
                 cumProb += probability;
                 endRange = (int)(cumProb * simulationSystem.NumberOfCustomers);
-                table.Add(new TimeDistribution(value, probability, cumProb, startRange, endRange));
+                if(startRange<= endRange)
+                    table.Add(new TimeDistribution(value, probability, cumProb, startRange, endRange));
                 startRange = endRange + 1;
             }
-
             index--; // Step back to allow the main loop to process correctly
         }
         
@@ -280,16 +299,21 @@ namespace MultiQueueSimulation
         {
             graph.Legends.Clear();
             graph.Series.Clear();
+            graph.ChartAreas[0].AxisX.CustomLabels.Clear();
 
-            if (s.WorkingRanges.Count == 0) return;
+
+            graph.ChartAreas[0].AxisX.Maximum = simulationSystem.EndTimeSimulation;
+            graph.ChartAreas[0].AxisX.Interval = simulationSystem.EndTimeSimulation;
+
             Series series = new Series
             {
                 ChartType = SeriesChartType.Area,
                 Color = Color.Blue,
                 BorderWidth = 2
             };
+
             // Add points to form a rectangle
-            int l, r;
+            int l = 0, r = 0;
             foreach (KeyValuePair<int, int> range in s.WorkingRanges)
             {
                 l = range.Key;
@@ -300,25 +324,24 @@ namespace MultiQueueSimulation
                 series.Points.AddXY(l, 1); // Bottom-left
                 series.Points.AddXY(l, 0); // Close the rectangle
             }
-            graph.ChartAreas[0].AxisX.Minimum = 0;
-            graph.ChartAreas[0].AxisY.Maximum = 1;
-            graph.ChartAreas[0].AxisY.Interval = 1;
-            graph.ChartAreas[0].AxisX.Title = "Time";
-            graph.ChartAreas[0].AxisY.Title = "B(t)";
-            graph.ChartAreas[0].AxisX.LabelStyle.Font = new Font("Arial", 10);
-            graph.ChartAreas[0].AxisX.TitleFont = new Font("Arial", 12);
-            graph.ChartAreas[0].AxisY.TitleFont = new Font("Arial", 12);
-            graph.ChartAreas[0].AxisX.LabelStyle.Angle = -90;
-
-            graph.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
-            graph.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
-            l = s.WorkingRanges.First().Key;
-            r = s.WorkingRanges.Last().Value;
-            graph.ChartAreas[0].AxisX.CustomLabels.Clear();
-            graph.ChartAreas[0].AxisX.CustomLabels.Add(l - 0.5, l + 0.5, l.ToString());
-            graph.ChartAreas[0].AxisX.CustomLabels.Add(r - 0.5, r + 0.5, r.ToString());
-
-            graph.Series.Add(series);
+            if (s.WorkingRanges.Count != 0)
+            {
+                l = s.WorkingRanges.First().Key;
+                r = s.WorkingRanges.Last().Value;
+                graph.Series.Add(series);
+            }
+            else
+            {
+                // Placeholder to render the axis
+                Series placeholderSeries = new Series
+                {
+                    ChartType = SeriesChartType.Line,
+                    Color = Color.Transparent
+                };
+                placeholderSeries.Points.AddXY(0, 0);
+                placeholderSeries.Points.AddXY(graph.ChartAreas[0].AxisX.Maximum, 0);
+                graph.Series.Add(placeholderSeries);
+            }
         }
         private void runButton_Click(object sender, EventArgs e)
         {
