@@ -16,13 +16,13 @@ namespace MultiQueueSimulation
         [STAThread]
         static void Main()
         {
-            SimulationSystem system = new SimulationSystem();
-            string result = TestingManager.Test(system, Constants.FileNames.TestCase1);
-            MessageBox.Show(result);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            SimulationSystem system = new SimulationSystem();
             Application.Run(new Form1());
-           
-        }
+/*            string result = TestingManager.Test(system, Constants.FileNames.TestCase1);
+            MessageBox.Show(result);
+*/        }
     }
 }

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using MultiQueueModels;
 using MultiQueueTesting;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Data.Common;
 
 namespace MultiQueueSimulation
 {
@@ -18,7 +19,7 @@ namespace MultiQueueSimulation
     {
         // Create an instance of SimulationSystem
         SimulationSystem simulationSystem;
-        // Size bigWindow = new Size(1474, 864);
+        String inputFileName;
         public Form1()
         {
             InitializeComponent();
@@ -29,6 +30,10 @@ namespace MultiQueueSimulation
             graph.Hide();
             graphLabel.Hide();
             graphBox.Hide();
+            serverPerformance.Hide();
+            simulationPerformance.Hide();
+            panel1.AutoScroll = true;
+            panel1.Hide();
         }
 
         private void browseButton_Click(object sender, EventArgs e)
@@ -45,9 +50,9 @@ namespace MultiQueueSimulation
                 // selected file path
                 string filePath = openFileDialog.FileName;
 
+                inputFileName = System.IO.Path.GetFileName(filePath);
                 // read the file
                 string[] lines = System.IO.File.ReadAllLines(filePath);
-
                 // loop through the file content
                 for (int i = 0; i < lines.Length; i++)
                 {
@@ -124,7 +129,6 @@ namespace MultiQueueSimulation
             dgview.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgview.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
             dgview.ColumnHeadersHeight = 60; // Increase the height of the header
-
             // Optional: Set the row style to alternate colors
             dgview.RowsDefaultCellStyle.BackColor = Color.White;
             dgview.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
@@ -140,6 +144,13 @@ namespace MultiQueueSimulation
             }
             dgview.DefaultCellStyle.Font = new Font("Arial", 14, FontStyle.Regular);
             dgview.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 12, FontStyle.Bold);
+            dgview.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dgview.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dgview.RowHeadersVisible = false;
+            foreach (DataGridViewColumn column in dgview.Columns)
+            {
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            }
         }
         private void showInputGrid(int idx)
         {
@@ -171,6 +182,7 @@ namespace MultiQueueSimulation
         }
         private void viewInput()
         {
+            panel1.Show();
             dgvInterarrival.Show();
             runButton.Show();
             List<String> inputCols = new List<String> { "Time" , "Probability", "Cumulative Probability", "Range" };
@@ -214,9 +226,14 @@ namespace MultiQueueSimulation
             graph.Show();
             graphBox.Show();
             graphLabel.Show();
+            serverPerformance.Show();
             graphBox.Items.Clear();
             graphBox.DropDownStyle = ComboBoxStyle.DropDownList;
             graphBox.Font = new Font("Arial", 10, FontStyle.Regular);
+            serverPerformance.DefaultCellStyle.Font = new Font("Arial", 14, FontStyle.Regular);
+            serverPerformance.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 12, FontStyle.Bold);
+            serverPerformance.ReadOnly = true;
+
             foreach (Server s in simulationSystem.Servers)
             {
                 graphBox.Items.Add(s.ID);
@@ -225,65 +242,98 @@ namespace MultiQueueSimulation
             {
                 graphBox.SelectedIndex = 0;
                 drawServerGraph(simulationSystem.Servers[0]);
+                // output server performance
+                drawServerPerformance(simulationSystem.Servers[0]);
             }
-        }
 
-        private void drawGraph(List<double> l, List<double> r)
+            // output simulation performance
+        
+            List<String> cols = new List<String>() { "Simulation Performace Measure", "Value" };
+            initializeGridView(ref simulationPerformance, ref cols);
+            simulationPerformance.Show();
+            simulationPerformance.Rows.Add("Number of Customers", simulationSystem.NumberOfCustomers);
+            simulationPerformance.Rows.Add("Number of Servers", simulationSystem.NumberOfServers);
+            simulationPerformance.Rows.Add("Simulation End Time", simulationSystem.EndTimeSimulation);
+            simulationPerformance.Rows.Add("Max Queue Length", simulationSystem.PerformanceMeasures.MaxQueueLength);
+            simulationPerformance.Rows.Add("Average Waiting Time", simulationSystem.PerformanceMeasures.AverageWaitingTime.ToString("F4"));
+            simulationPerformance.Rows.Add("Waiting Probability", simulationSystem.PerformanceMeasures.WaitingProbability.ToString("F4"));
+            simulationPerformance.Rows.Add("Stopping Criteria", simulationSystem.StoppingCriteria.ToString());
+            simulationPerformance.Rows.Add("Stopping Number", simulationSystem.StoppingNumber);
+            simulationPerformance.Columns["Simulation Performace Measure"].SortMode = DataGridViewColumnSortMode.NotSortable;
+            simulationPerformance.Columns["Value"].SortMode = DataGridViewColumnSortMode.NotSortable;
+        }
+        private void drawServerPerformance(Server s)
         {
-
-            graph.Legends.Clear();
-            graph.Series.Clear();
-            Series series = new Series
-            {
-                ChartType = SeriesChartType.Area, Color = Color.Blue, BorderWidth = 2
-            };
-            // Add points to form a rectangle
-            for (int i = 0; i < l.Count; i++)
-            {
-                series.Points.AddXY(l[i], 0); // Top-left
-                series.Points.AddXY(r[i], 0); // Top-right
-                series.Points.AddXY(r[i], 1); // Bottom-right
-                series.Points.AddXY(l[i], 1); // Bottom-left
-                series.Points.AddXY(l[i], 0); // Close the rectangle
-            }
-            graph.ChartAreas[0].AxisY.Maximum = 1;
-            graph.ChartAreas[0].AxisX.Title = "Time";
-            graph.ChartAreas[0].AxisY.Title = "B(t)";
-            graph.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
-            graph.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
-            graph.Series.Add(series);
+            // output performance
+            List<String> cols = new List<String>() { "Server Performance Measure", "Value"};
+            initializeGridView(ref serverPerformance, ref cols);
+            serverPerformance.Rows.Add("Average Service Time", s.AverageServiceTime.ToString("F4"));
+            serverPerformance.Rows.Add("Idle Probability", s.IdleProbability.ToString("F4"));
+            serverPerformance.Rows.Add("Utilization", s.Utilization.ToString("F4"));
+            serverPerformance.Rows.Add("Finish Time", s.FinishTime);
+            serverPerformance.Rows.Add("Total Number Of Customers", s.TotalNumberOfCustomers);
+            serverPerformance.Columns["Server Performance Measure"].SortMode = DataGridViewColumnSortMode.NotSortable;
+            serverPerformance.Columns["Value"].SortMode = DataGridViewColumnSortMode.NotSortable;
         }
+
         private void drawServerGraph(Server s)
         {
-            List<double> l = new List<double>();
-            List<double> r = new List<double>();
-            foreach (SimulationCase row in simulationSystem.SimulationTable)
+            graph.Legends.Clear();
+            graph.Series.Clear();
+
+            if (s.WorkingRanges.Count == 0) return;
+            Series series = new Series
             {
-                if (row.AssignedServer == s)
-                {
-                    l.Add(row.StartTime);
-                    r.Add(row.EndTime);
-                }
+                ChartType = SeriesChartType.Area,
+                Color = Color.Blue,
+                BorderWidth = 2
+            };
+            // Add points to form a rectangle
+            int l, r;
+            foreach (KeyValuePair<int, int> range in s.WorkingRanges)
+            {
+                l = range.Key;
+                r = range.Value;
+                series.Points.AddXY(l, 0); // Top-left
+                series.Points.AddXY(r, 0); // Top-right
+                series.Points.AddXY(r, 1); // Bottom-right
+                series.Points.AddXY(l, 1); // Bottom-left
+                series.Points.AddXY(l, 0); // Close the rectangle
             }
-            drawGraph(l, r);
+            graph.ChartAreas[0].AxisX.Minimum = 0;
+            graph.ChartAreas[0].AxisY.Maximum = 1;
+            graph.ChartAreas[0].AxisY.Interval = 1;
+            graph.ChartAreas[0].AxisX.Title = "Time";
+            graph.ChartAreas[0].AxisY.Title = "B(t)";
+            graph.ChartAreas[0].AxisX.LabelStyle.Font = new Font("Arial", 10);
+            graph.ChartAreas[0].AxisX.TitleFont = new Font("Arial", 12);
+            graph.ChartAreas[0].AxisY.TitleFont = new Font("Arial", 12);
+            graph.ChartAreas[0].AxisX.LabelStyle.Angle = -90;
+
+            graph.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            graph.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
+            l = s.WorkingRanges.First().Key;
+            r = s.WorkingRanges.Last().Value;
+            graph.ChartAreas[0].AxisX.CustomLabels.Clear();
+            graph.ChartAreas[0].AxisX.CustomLabels.Add(l - 0.5, l + 0.5, l.ToString());
+            graph.ChartAreas[0].AxisX.CustomLabels.Add(r - 0.5, r + 0.5, r.ToString());
+
+            graph.Series.Add(series);
         }
         private void runButton_Click(object sender, EventArgs e)
         {
             simulationSystem.Simulate();
-            try
-            {
-                viewOutput();
-            }
-            catch
-            {
-                Console.WriteLine("Can't simulate the system.");
-            }
+            viewOutput();
+            runButton.Hide();
+            string result = TestingManager.Test(simulationSystem, inputFileName);
+            MessageBox.Show(result);
         }
         private void graphBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             int idx = graphBox.SelectedIndex;
             if (idx == -1) return;
             drawServerGraph(simulationSystem.Servers[idx]);
+            drawServerPerformance(simulationSystem.Servers[idx]);
         }
     }
 }

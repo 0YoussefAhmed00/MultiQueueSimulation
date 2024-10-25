@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.browseButton = new System.Windows.Forms.Button();
@@ -41,9 +41,15 @@
             this.graph = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.graphBox = new System.Windows.Forms.ComboBox();
             this.graphLabel = new System.Windows.Forms.Label();
+            this.serverPerformance = new System.Windows.Forms.DataGridView();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.simulationPerformance = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInterarrival)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.outputGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.graph)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.serverPerformance)).BeginInit();
+            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.simulationPerformance)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -71,7 +77,7 @@
             // browseButton
             // 
             this.browseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.browseButton.Location = new System.Drawing.Point(689, 72);
+            this.browseButton.Location = new System.Drawing.Point(680, 72);
             this.browseButton.Margin = new System.Windows.Forms.Padding(2);
             this.browseButton.Name = "browseButton";
             this.browseButton.Size = new System.Drawing.Size(80, 31);
@@ -84,7 +90,7 @@
             // 
             this.dgvInterarrival.BackgroundColor = System.Drawing.SystemColors.ActiveBorder;
             this.dgvInterarrival.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvInterarrival.Location = new System.Drawing.Point(36, 138);
+            this.dgvInterarrival.Location = new System.Drawing.Point(48, 60);
             this.dgvInterarrival.Margin = new System.Windows.Forms.Padding(2);
             this.dgvInterarrival.Name = "dgvInterarrival";
             this.dgvInterarrival.RowHeadersWidth = 51;
@@ -96,7 +102,7 @@
             // 
             this.serverBox.BackColor = System.Drawing.SystemColors.Window;
             this.serverBox.FormattingEnabled = true;
-            this.serverBox.Location = new System.Drawing.Point(312, 112);
+            this.serverBox.Location = new System.Drawing.Point(363, 20);
             this.serverBox.Name = "serverBox";
             this.serverBox.Size = new System.Drawing.Size(149, 21);
             this.serverBox.TabIndex = 5;
@@ -105,7 +111,7 @@
             // runButton
             // 
             this.runButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.runButton.Location = new System.Drawing.Point(347, 397);
+            this.runButton.Location = new System.Drawing.Point(685, 108);
             this.runButton.Name = "runButton";
             this.runButton.Size = new System.Drawing.Size(75, 23);
             this.runButton.TabIndex = 6;
@@ -116,31 +122,31 @@
             // outputGrid
             // 
             this.outputGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.outputGrid.Location = new System.Drawing.Point(235, 453);
+            this.outputGrid.Location = new System.Drawing.Point(48, 360);
             this.outputGrid.Name = "outputGrid";
-            this.outputGrid.Size = new System.Drawing.Size(1043, 351);
+            this.outputGrid.Size = new System.Drawing.Size(1356, 502);
             this.outputGrid.TabIndex = 7;
             // 
             // graph
             // 
-            chartArea5.Name = "ChartArea1";
-            this.graph.ChartAreas.Add(chartArea5);
-            legend5.Name = "Legend1";
-            this.graph.Legends.Add(legend5);
-            this.graph.Location = new System.Drawing.Point(822, 138);
+            chartArea1.Name = "ChartArea1";
+            this.graph.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.graph.Legends.Add(legend1);
+            this.graph.Location = new System.Drawing.Point(48, 951);
             this.graph.Name = "graph";
-            series5.ChartArea = "ChartArea1";
-            series5.Legend = "Legend1";
-            series5.Name = "Series1";
-            this.graph.Series.Add(series5);
-            this.graph.Size = new System.Drawing.Size(591, 300);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.graph.Series.Add(series1);
+            this.graph.Size = new System.Drawing.Size(1026, 405);
             this.graph.TabIndex = 8;
             this.graph.Text = "chart1";
             // 
             // graphBox
             // 
             this.graphBox.FormattingEnabled = true;
-            this.graphBox.Location = new System.Drawing.Point(1295, 102);
+            this.graphBox.Location = new System.Drawing.Point(703, 906);
             this.graphBox.Name = "graphBox";
             this.graphBox.Size = new System.Drawing.Size(121, 21);
             this.graphBox.TabIndex = 9;
@@ -150,25 +156,51 @@
             // 
             this.graphLabel.AutoSize = true;
             this.graphLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.graphLabel.Location = new System.Drawing.Point(1184, 102);
+            this.graphLabel.Location = new System.Drawing.Point(592, 906);
             this.graphLabel.Name = "graphLabel";
             this.graphLabel.Size = new System.Drawing.Size(105, 20);
             this.graphLabel.TabIndex = 10;
             this.graphLabel.Text = "Select server:";
+            // 
+            // serverPerformance
+            // 
+            this.serverPerformance.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.serverPerformance.Location = new System.Drawing.Point(1102, 1030);
+            this.serverPerformance.Name = "serverPerformance";
+            this.serverPerformance.Size = new System.Drawing.Size(302, 265);
+            this.serverPerformance.TabIndex = 12;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.simulationPerformance);
+            this.panel1.Controls.Add(this.graphLabel);
+            this.panel1.Controls.Add(this.graphBox);
+            this.panel1.Controls.Add(this.serverPerformance);
+            this.panel1.Controls.Add(this.outputGrid);
+            this.panel1.Controls.Add(this.graph);
+            this.panel1.Controls.Add(this.dgvInterarrival);
+            this.panel1.Controls.Add(this.serverBox);
+            this.panel1.Location = new System.Drawing.Point(12, 137);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1450, 597);
+            this.panel1.TabIndex = 13;
+            // 
+            // simulationPerformance
+            // 
+            this.simulationPerformance.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.simulationPerformance.Location = new System.Drawing.Point(830, 60);
+            this.simulationPerformance.Name = "simulationPerformance";
+            this.simulationPerformance.Size = new System.Drawing.Size(574, 240);
+            this.simulationPerformance.TabIndex = 13;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.InactiveCaption;
-            this.ClientSize = new System.Drawing.Size(1458, 825);
-            this.Controls.Add(this.graphLabel);
-            this.Controls.Add(this.graphBox);
-            this.Controls.Add(this.graph);
-            this.Controls.Add(this.outputGrid);
+            this.ClientSize = new System.Drawing.Size(1497, 746);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.runButton);
-            this.Controls.Add(this.serverBox);
-            this.Controls.Add(this.dgvInterarrival);
             this.Controls.Add(this.browseButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -178,6 +210,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvInterarrival)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.outputGrid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.graph)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.serverPerformance)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.simulationPerformance)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -195,6 +231,9 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart graph;
         private System.Windows.Forms.ComboBox graphBox;
         private System.Windows.Forms.Label graphLabel;
+        private System.Windows.Forms.DataGridView serverPerformance;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.DataGridView simulationPerformance;
     }
 }
 

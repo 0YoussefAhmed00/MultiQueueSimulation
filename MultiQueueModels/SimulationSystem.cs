@@ -66,14 +66,15 @@ namespace MultiQueueModels
                     // we can do binary search but not importart as it's small factor!
                     while (FirstCustomerIndexInQ<SimulationTable.Count && SimulationTable[FirstCustomerIndexInQ].StartTime <= customer.ArrivalTime)
                         FirstCustomerIndexInQ++;
-                    maxQLen =  Math.Max(maxQLen,i - FirstCustomerIndexInQ + 1);
+                    maxQLen =  Math.Max(maxQLen,i - FirstCustomerIndexInQ);
                 }
                 else
-                    FirstCustomerIndexInQ = i + 1;
+                    FirstCustomerIndexInQ = i;
             };
             #endregion
             #region special case customer 1
             // receive Customer 1 & serve
+            customer.RandomInterArrival = 1;
             customer.CustomerNumber = 1;
             serveCustomer(1);
             #endregion
@@ -117,7 +118,7 @@ namespace MultiQueueModels
             PerformanceMeasures.WaitingProbability = ((decimal)numberOfWaitedCustomer) / SimulationTable.Count;
 
             foreach (Server server in Servers) {
-                server.AverageServiceTime = ((decimal)server.TotalWorkingTime) / server.TotalNumberOfCustomers;
+                server.AverageServiceTime = ((decimal)server.TotalWorkingTime) / Math.Max(1, server.TotalNumberOfCustomers);
                 server.Utilization = ((decimal)server.TotalWorkingTime) / EndTimeSimulation;
                 server.IdleProbability = 1 - server.Utilization;
             }
