@@ -57,19 +57,19 @@ namespace MultiQueueModels
             Action<int> serveCustomer = (int i) => {
                 customer.RandomService = random.Next(1, NumberOfCustomers);
                 AssignCustomerToServer(ref customer, ref sortedFinished, ref idleServers);
+                SimulationTable.Add(customer);
                 EndTimeSimulation = Math.Max(EndTimeSimulation, customer.EndTime);
                 if (customer.TimeInQueue != 0)
                 {
                     waitedTime += customer.TimeInQueue;
                     numberOfWaitedCustomer += 1;
                     // we can do binary search but not importart as it's small factor!
-                    while (SimulationTable[FirstCustomerIndexInQ].StartTime <= customer.ArrivalTime)
+                    while (FirstCustomerIndexInQ<SimulationTable.Count && SimulationTable[FirstCustomerIndexInQ].StartTime <= customer.ArrivalTime)
                         FirstCustomerIndexInQ++;
                     maxQLen =  Math.Max(maxQLen,i - FirstCustomerIndexInQ + 1);
                 }
                 else
                     FirstCustomerIndexInQ = i + 1;
-                SimulationTable.Add(customer);
             };
             #endregion
             #region special case customer 1

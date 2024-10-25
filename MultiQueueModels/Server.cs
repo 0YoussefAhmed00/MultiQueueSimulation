@@ -11,6 +11,7 @@ namespace MultiQueueModels
         public Server()
         {
             this.TimeDistribution = new List<TimeDistribution>();
+            this.WorkingRanges = new List<KeyValuePair<int, int>>();
         }
         public Server(int ID) : this()
         {
@@ -27,6 +28,7 @@ namespace MultiQueueModels
         public int FinishTime { get; set; }
         public int TotalWorkingTime { get; set; }
         public int TotalNumberOfCustomers { get; set; }
+        public List<KeyValuePair<int, int>> WorkingRanges { get; set; }
 
     }
 }

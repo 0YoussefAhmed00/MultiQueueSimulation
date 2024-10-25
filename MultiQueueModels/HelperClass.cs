@@ -137,9 +137,12 @@ namespace MultiQueueModels
             customer.StartTime = Math.Max(customer.ArrivalTime, customer.AssignedServer.FinishTime);
             customer.TimeInQueue = customer.StartTime - customer.ArrivalTime;
             customer.EndTime = customer.StartTime + customer.ServiceTime;
+            server.WorkingRanges.Add(new KeyValuePair<int, int>(customer.StartTime, customer.EndTime));
             server.TotalWorkingTime += customer.ServiceTime;
             server.FinishTime = customer.EndTime;
             server.TotalNumberOfCustomers += 1;
+            if (!sortedFinished.ContainsKey(server.FinishTime))
+                sortedFinished[server.FinishTime] = new List<Server>();  
             sortedFinished[server.FinishTime].Add(server);
         }
     }
