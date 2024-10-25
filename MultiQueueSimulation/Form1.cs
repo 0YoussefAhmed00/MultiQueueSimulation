@@ -15,9 +15,6 @@ namespace MultiQueueSimulation
 
     public partial class Form1 : Form
     {
-        // Global variables
-        private int numberOfCustomers = 100;
-
         // Create an instance of SimulationSystem
         SimulationSystem simulationSystem;
         public Form1()
@@ -100,7 +97,7 @@ namespace MultiQueueSimulation
                 int value = int.Parse(parts[0].Trim());
                 decimal probability = decimal.Parse(parts[1].Trim());
                 cumProb += probability;
-                endRange = (int)(cumProb * numberOfCustomers);
+                endRange = (int)(cumProb * simulationSystem.NumberOfCustomers);
                 table.Add(new TimeDistribution(value, probability, cumProb, startRange, endRange));
                 startRange = endRange + 1;
             }

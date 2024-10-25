@@ -10,9 +10,8 @@ namespace MultiQueueModels
     {
         public SimulationCase()
         {
-            this.AssignedServer = new Server();
+            AssignedServer = new Server();
         }
-
         public int CustomerNumber { get; set; }
         public int RandomInterArrival { get; set; }
         public int InterArrival { get; set; }
