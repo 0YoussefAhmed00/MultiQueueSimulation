@@ -18,6 +18,7 @@ namespace MultiQueueSimulation
     {
         // Create an instance of SimulationSystem
         SimulationSystem simulationSystem;
+        // Size bigWindow = new Size(1474, 864);
         public Form1()
         {
             InitializeComponent();
@@ -26,9 +27,11 @@ namespace MultiQueueSimulation
             runButton.Hide();
             outputGrid.Hide(); 
             graph.Hide();
+            graphLabel.Hide();
+            graphBox.Hide();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void browseButton_Click(object sender, EventArgs e)
         {
             // openFileDialog to browse for the input file
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -170,7 +173,7 @@ namespace MultiQueueSimulation
         {
             dgvInterarrival.Show();
             runButton.Show();
-            List<String> inputCols = new List<String> { "Time" , "Probability", "CumulativeProbability", "Range" };
+            List<String> inputCols = new List<String> { "Time" , "Probability", "Cumulative Probability", "Range" };
             initializeGridView(ref dgvInterarrival, ref inputCols);
             // Fill comboBox
             serverBox.Items.Clear();
@@ -192,11 +195,10 @@ namespace MultiQueueSimulation
         }
         private void viewOutput()
         {
+            // output table
             outputGrid.Columns.Clear();
             outputGrid.Rows.Clear();
             outputGrid.Show();
-            graph.Show();
-            // view output table
             List<String> outputCols = new List<String> { "Customer Number", "Random Inter Arrival", "Inter Arrival Time",
                 "Arrival Time", "Random Service", "Assigned Server ID", "Service Start", "Service Time", "Service End",
                 "Time in Queue"};
@@ -207,39 +209,81 @@ namespace MultiQueueSimulation
                     row.RandomService, row.AssignedServer.ID, row.StartTime, row.ServiceTime, row.EndTime, row.TimeInQueue);
             }
             dgvInterarrival.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-//            drawGraph();
+
+            // output graph
+            graph.Show();
+            graphBox.Show();
+            graphLabel.Show();
+            graphBox.Items.Clear();
+            graphBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            graphBox.Font = new Font("Arial", 10, FontStyle.Regular);
+            foreach (Server s in simulationSystem.Servers)
+            {
+                graphBox.Items.Add(s.ID);
+            }
+            if (simulationSystem.Servers.Count > 0)
+            {
+                graphBox.SelectedIndex = 0;
+                drawServerGraph(simulationSystem.Servers[0]);
+            }
         }
-        private void drawGraph(int idx = 0)
+
+        private void drawGraph(List<double> l, List<double> r)
         {
-            // not finished
+
             graph.Legends.Clear();
-
-            Series series = new Series();
-            series.ChartType = SeriesChartType.RangeColumn;
-            series.Color = System.Drawing.Color.Blue;
-
-            DataPoint rangePoint1 = new DataPoint();
-            rangePoint1.SetValueXY(3, 5);  // X range [3, 5]
-            rangePoint1.YValues = new double[] { 1 };  // Y value (height of the bar)
-            series.Points.Add(rangePoint1);
-
-            DataPoint rangePoint2 = new DataPoint();
-            rangePoint2.SetValueXY(8, 10);  // X range [8, 10]
-            rangePoint2.YValues = new double[] { 1 };  // Y value (height of the bar)
-            series.Points.Add(rangePoint2);
-
-            graph.ChartAreas[0].AxisX.Minimum = 0;
+            graph.Series.Clear();
+            Series series = new Series
+            {
+                ChartType = SeriesChartType.Area, Color = Color.Blue, BorderWidth = 2
+            };
+            // Add points to form a rectangle
+            for (int i = 0; i < l.Count; i++)
+            {
+                series.Points.AddXY(l[i], 0); // Top-left
+                series.Points.AddXY(r[i], 0); // Top-right
+                series.Points.AddXY(r[i], 1); // Bottom-right
+                series.Points.AddXY(l[i], 1); // Bottom-left
+                series.Points.AddXY(l[i], 0); // Close the rectangle
+            }
             graph.ChartAreas[0].AxisY.Maximum = 1;
-            graph.ChartAreas[0].AxisY.Interval = 1;
             graph.ChartAreas[0].AxisX.Title = "Time";
             graph.ChartAreas[0].AxisY.Title = "B(t)";
+            graph.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+            graph.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
             graph.Series.Add(series);
-
+        }
+        private void drawServerGraph(Server s)
+        {
+            List<double> l = new List<double>();
+            List<double> r = new List<double>();
+            foreach (SimulationCase row in simulationSystem.SimulationTable)
+            {
+                if (row.AssignedServer == s)
+                {
+                    l.Add(row.StartTime);
+                    r.Add(row.EndTime);
+                }
+            }
+            drawGraph(l, r);
         }
         private void runButton_Click(object sender, EventArgs e)
         {
-            viewOutput();            
+            try
+            {
+                // simulationSystem.Simulate();
+                viewOutput();
+            }
+            catch
+            {
+                Console.WriteLine("Can't simulate the system.");
+            }
         }
-
+        private void graphBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int idx = graphBox.SelectedIndex;
+            if (idx == -1) return;
+            drawServerGraph(simulationSystem.Servers[idx]);
+        }
     }
 }
