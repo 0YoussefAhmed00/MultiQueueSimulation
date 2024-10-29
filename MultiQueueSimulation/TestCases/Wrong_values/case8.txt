@@ -2,28 +2,26 @@ NumberOfServers
 3
 
 StoppingNumber
-74
+150
 
 StoppingCriteria
-0
-
-SelectionMethod
 1
 
+SelectionMethod
+3  
+
 InterarrivalDistribution
-1, 0.64
-2, 0.13
-3, 0.13
-4, 0.1
+1, 0.4
+2, 0.6
 
 ServiceDistribution_Server1
-2, 0.51
-3, 0.15
-4, 0.24
-5, 0.1
+5, 0.5
+6, 0.5
 
 ServiceDistribution_Server2
-3, 0.65
-4, 0.1
-5, 0.12
-6, 0.13
+8, 0.4
+9, 0.6
+
+ServiceDistribution_Server3
+7, 0.6
+8, 0.4
