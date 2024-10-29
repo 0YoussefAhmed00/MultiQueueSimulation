@@ -78,6 +78,15 @@ namespace MultiQueueSimulation
                     string line = lines[i].Trim();
                     ParseInputLine(lines, ref i, line);
                 }
+                // Set radio buttons based on the StoppingCriteria value
+                if (simulationSystem.StoppingCriteria == Enums.StoppingCriteria.NumberOfCustomers)
+                {
+                    radioButton1.Checked = true;
+                }
+                else
+                {
+                    radioButton2.Checked = true;
+                }
                 // Display data in the grid view
                 viewInput();
             }
@@ -206,6 +215,18 @@ namespace MultiQueueSimulation
             runButton.Show();
             List<String> inputCols = new List<String> { "Time" , "Probability", "Cumulative Probability", "Range" };
             initializeGridView(ref dgvInterarrival, ref inputCols);
+            // Display the number of servers in textBox1 and make it read-only
+            textBox1.Text = simulationSystem.NumberOfServers.ToString();
+            textBox1.ReadOnly = true;
+            // Populate comboBox1 with selection methods and set the selected method
+            comboBox1.Items.Clear();
+            foreach (Enums.SelectionMethod method in Enum.GetValues(typeof(Enums.SelectionMethod)))
+            {
+                comboBox1.Items.Add(method);
+            }
+            comboBox1.SelectedItem = simulationSystem.SelectionMethod; // Set initial selected method
+            comboBox1.DropDownStyle = ComboBoxStyle.DropDownList; // Make it a dropdown list
+
             // Fill comboBox
             serverBox.Items.Clear();
             serverBox.Show();
@@ -357,6 +378,30 @@ namespace MultiQueueSimulation
             if (idx == -1) return;
             drawServerGraph(simulationSystem.Servers[idx]);
             drawServerPerformance(simulationSystem.Servers[idx]);
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton1.Checked)
+            {
+                simulationSystem.StoppingCriteria = Enums.StoppingCriteria.NumberOfCustomers;
+            }
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton2.Checked)
+            {
+                simulationSystem.StoppingCriteria = Enums.StoppingCriteria.SimulationEndTime;
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox1.SelectedItem != null)
+            {
+                simulationSystem.SelectionMethod = (Enums.SelectionMethod)comboBox1.SelectedItem;
+            }
         }
     }
 }

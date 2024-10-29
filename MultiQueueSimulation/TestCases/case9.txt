@@ -1,5 +1,5 @@
 NumberOfServers
-1
+3
 
 StoppingNumber
 100
@@ -8,12 +8,20 @@ StoppingCriteria
 1
 
 SelectionMethod
-2  
+3
 
 InterarrivalDistribution
-1, 0.4
-2, 0.6
+1, 0.6
+2, 0.4
 
 ServiceDistribution_Server1
-15, 0.8
-16, 0.2
+20, 0.7
+21, 0.3
+
+ServiceDistribution_Server2
+20, 0.6
+21, 0.4
+
+ServiceDistribution_Server3
+20, 0.5
+21, 0.5

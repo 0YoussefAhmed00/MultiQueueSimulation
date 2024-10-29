@@ -1,0 +1,617 @@
+NumberOfServers
+100
+
+StoppingNumber
+10000
+
+StoppingCriteria
+1
+
+SelectionMethod
+1
+
+InterarrivalDistribution
+1, 0.25
+2, 0.40
+3, 0.20
+4, 0.15
+
+ServiceDistribution_Server1
+2, 0.30
+3, 0.28
+4, 0.25
+5, 0.17
+
+ServiceDistribution_Server2
+3, 0.35
+4, 0.25
+5, 0.20
+6, 0.20
+
+ServiceDistribution_Server3
+2, 0.25
+3, 0.30
+4, 0.20
+5, 0.25
+
+ServiceDistribution_Server4
+2, 0.20
+3, 0.25
+4, 0.30
+5, 0.25
+
+ServiceDistribution_Server5
+2, 0.28
+3, 0.32
+4, 0.20
+5, 0.20
+
+ServiceDistribution_Server6
+2, 0.26
+3, 0.29
+4, 0.25
+5, 0.20
+
+ServiceDistribution_Server7
+2, 0.32
+3, 0.23
+4, 0.25
+5, 0.20
+
+ServiceDistribution_Server8
+2, 0.22
+3, 0.30
+4, 0.28
+5, 0.20
+
+ServiceDistribution_Server9
+2, 0.27
+3, 0.26
+4, 0.30
+5, 0.17
+
+ServiceDistribution_Server10
+2, 0.24
+3, 0.28
+4, 0.28
+5, 0.20
+
+ServiceDistribution_Server11
+2, 0.25
+3, 0.27
+4, 0.25
+5, 0.23
+
+ServiceDistribution_Server12
+2, 0.30
+3, 0.20
+4, 0.30
+5, 0.20
+
+ServiceDistribution_Server13
+2, 0.25
+3, 0.28
+4, 0.20
+5, 0.27
+
+ServiceDistribution_Server14
+2, 0.22
+3, 0.35
+4, 0.23
+5, 0.20
+
+ServiceDistribution_Server15
+2, 0.30
+3, 0.22
+4, 0.28
+5, 0.20
+
+ServiceDistribution_Server16
+2, 0.25
+3, 0.28
+4, 0.25
+5, 0.22
+
+ServiceDistribution_Server17
+2, 0.27
+3, 0.20
+4, 0.30
+5, 0.23
+
+ServiceDistribution_Server18
+2, 0.29
+3, 0.27
+4, 0.23
+5, 0.21
+
+ServiceDistribution_Server19
+2, 0.26
+3, 0.29
+4, 0.23
+5, 0.22
+
+ServiceDistribution_Server20
+2, 0.25
+3, 0.22
+4, 0.28
+5, 0.25
+
+ServiceDistribution_Server21
+2, 0.24
+3, 0.30
+4, 0.20
+5, 0.26
+
+ServiceDistribution_Server22
+2, 0.23
+3, 0.28
+4, 0.27
+5, 0.22
+
+ServiceDistribution_Server23
+2, 0.28
+3, 0.25
+4, 0.22
+5, 0.25
+
+ServiceDistribution_Server24
+2, 0.25
+3, 0.26
+4, 0.27
+5, 0.22
+
+ServiceDistribution_Server25
+2, 0.24
+3, 0.25
+4, 0.26
+5, 0.25
+
+ServiceDistribution_Server26
+2, 0.27
+3, 0.24
+4, 0.26
+5, 0.23
+
+ServiceDistribution_Server27
+2, 0.25
+3, 0.22
+4, 0.28
+5, 0.25
+
+ServiceDistribution_Server28
+2, 0.29
+3, 0.21
+4, 0.30
+5, 0.20
+
+ServiceDistribution_Server29
+2, 0.28
+3, 0.24
+4, 0.22
+5, 0.26
+
+ServiceDistribution_Server30
+2, 0.24
+3, 0.28
+4, 0.25
+5, 0.23
+
+ServiceDistribution_Server31
+2, 0.26
+3, 0.25
+4, 0.23
+5, 0.26
+
+ServiceDistribution_Server32
+2, 0.27
+3, 0.23
+4, 0.25
+5, 0.25
+
+ServiceDistribution_Server33
+2, 0.25
+3, 0.26
+4, 0.24
+5, 0.25
+
+ServiceDistribution_Server34
+2, 0.24
+3, 0.28
+4, 0.23
+5, 0.25
+
+ServiceDistribution_Server35
+2, 0.28
+3, 0.27
+4, 0.22
+5, 0.23
+
+ServiceDistribution_Server36
+2, 0.30
+3, 0.22
+4, 0.24
+5, 0.24
+
+ServiceDistribution_Server37
+2, 0.27
+3, 0.24
+4, 0.26
+5, 0.23
+
+ServiceDistribution_Server38
+2, 0.25
+3, 0.28
+4, 0.24
+5, 0.23
+
+ServiceDistribution_Server39
+2, 0.26
+3, 0.27
+4, 0.23
+5, 0.24
+
+ServiceDistribution_Server40
+2, 0.28
+3, 0.23
+4, 0.26
+5, 0.23
+
+ServiceDistribution_Server41
+2, 0.27
+3, 0.25
+4, 0.23
+5, 0.25
+
+ServiceDistribution_Server42
+2, 0.26
+3, 0.24
+4, 0.25
+5, 0.25
+
+ServiceDistribution_Server43
+2, 0.27
+3, 0.23
+4, 0.26
+5, 0.24
+
+ServiceDistribution_Server44
+2, 0.25
+3, 0.27
+4, 0.23
+5, 0.25
+
+ServiceDistribution_Server45
+2, 0.28
+3, 0.26
+4, 0.22
+5, 0.24
+
+ServiceDistribution_Server46
+2, 0.30
+3, 0.23
+4, 0.23
+5, 0.24
+
+ServiceDistribution_Server47
+2, 0.27
+3, 0.25
+4, 0.24
+5, 0.24
+
+ServiceDistribution_Server48
+2, 0.26
+3, 0.26
+4, 0.23
+5, 0.25
+
+ServiceDistribution_Server49
+2, 0.27
+3, 0.25
+4, 0.24
+5, 0.24
+
+ServiceDistribution_Server50
+2, 0.25
+3, 0.26
+4, 0.23
+5, 0.26
+
+ServiceDistribution_Server51
+2, 0.24
+3, 0.27
+4, 0.24
+5, 0.25
+
+ServiceDistribution_Server52
+2, 0.28
+3, 0.24
+4, 0.22
+5, 0.26
+
+ServiceDistribution_Server53
+2, 0.30
+3, 0.25
+4, 0.23
+5, 0.22
+
+ServiceDistribution_Server54
+2, 0.27
+3, 0.23
+4, 0.26
+5, 0.24
+
+ServiceDistribution_Server55
+2, 0.26
+3, 0.28
+4, 0.22
+5, 0.24
+
+ServiceDistribution_Server56
+2, 0.27
+3, 0.24
+4, 0.25
+5, 0.24
+
+ServiceDistribution_Server57
+2, 0.28
+3, 0.23
+4, 0.24
+5, 0.25
+
+ServiceDistribution_Server58
+2, 0.30
+3, 0.25
+4, 0.22
+5, 0.23
+
+ServiceDistribution_Server59
+2, 0.26
+3, 0.27
+4, 0.23
+5, 0.24
+
+ServiceDistribution_Server60
+2, 0.25
+3, 0.24
+4, 0.26
+5, 0.25
+
+ServiceDistribution_Server61
+2, 0.27
+3, 0.23
+4, 0.24
+5, 0.26
+
+ServiceDistribution_Server62
+2, 0.26
+3, 0.28
+4, 0.24
+5, 0.22
+
+ServiceDistribution_Server63
+2, 0.27
+3, 0.25
+4, 0.23
+5, 0.25
+
+ServiceDistribution_Server64
+2, 0.28
+3, 0.23
+4, 0.26
+5, 0.23
+
+ServiceDistribution_Server65
+2, 0.29
+3, 0.24
+4, 0.25
+5, 0.22
+
+ServiceDistribution_Server66
+2, 0.25
+3, 0.27
+4, 0.24
+5, 0.24
+
+ServiceDistribution_Server67
+2, 0.30
+3, 0.22
+4, 0.26
+5, 0.22
+
+ServiceDistribution_Server68
+2, 0.27
+3, 0.24
+4, 0.25
+5, 0.24
+
+ServiceDistribution_Server69
+2, 0.28
+3, 0.23
+4, 0.26
+5, 0.23
+
+ServiceDistribution_Server70
+2, 0.30
+3, 0.25
+4, 0.22
+5, 0.23
+
+ServiceDistribution_Server71
+2, 0.26
+3, 0.26
+4, 0.23
+5, 0.25
+
+ServiceDistribution_Server72
+2, 0.27
+3, 0.25
+4, 0.24
+5, 0.24
+
+ServiceDistribution_Server73
+2, 0.28
+3, 0.24
+4, 0.25
+5, 0.23
+
+ServiceDistribution_Server74
+2, 0.29
+3, 0.23
+4, 0.26
+5, 0.22
+
+ServiceDistribution_Server75
+2, 0.25
+3, 0.26
+4, 0.24
+5, 0.25
+
+ServiceDistribution_Server76
+2, 0.27
+3, 0.23
+4, 0.25
+5, 0.25
+
+ServiceDistribution_Server77
+2, 0.30
+3, 0.24
+4, 0.25
+5, 0.21
+
+ServiceDistribution_Server78
+2, 0.28
+3, 0.26
+4, 0.22
+5, 0.24
+
+ServiceDistribution_Server79
+2, 0.29
+3, 0.25
+4, 0.23
+5, 0.23
+
+ServiceDistribution_Server80
+2, 0.27
+3, 0.22
+4, 0.26
+5, 0.25
+
+ServiceDistribution_Server81
+2, 0.25
+3, 0.26
+4, 0.23
+5, 0.26
+
+ServiceDistribution_Server82
+2, 0.24
+3, 0.28
+4, 0.25
+5, 0.23
+
+ServiceDistribution_Server83
+2, 0.28
+3, 0.24
+4, 0.25
+5, 0.23
+
+ServiceDistribution_Server84
+2, 0.30
+3, 0.25
+4, 0.23
+5, 0.22
+
+ServiceDistribution_Server85
+2, 0.27
+3, 0.26
+4, 0.24
+5, 0.23
+
+ServiceDistribution_Server86
+2, 0.26
+3, 0.28
+4, 0.25
+5, 0.21
+
+ServiceDistribution_Server87
+2, 0.29
+3, 0.25
+4, 0.22
+5, 0.24
+
+ServiceDistribution_Server88
+2, 0.28
+3, 0.24
+4, 0.25
+5, 0.23
+
+ServiceDistribution_Server89
+2, 0.27
+3, 0.23
+4, 0.26
+5, 0.24
+
+ServiceDistribution_Server90
+2, 0.26
+3, 0.26
+4, 0.24
+5, 0.24
+
+ServiceDistribution_Server91
+2, 0.30
+3, 0.25
+4, 0.22
+5, 0.23
+
+ServiceDistribution_Server92
+2, 0.25
+3, 0.27
+4, 0.24
+5, 0.24
+
+ServiceDistribution_Server93
+2, 0.29
+3, 0.24
+4, 0.25
+5, 0.22
+
+ServiceDistribution_Server94
+2, 0.27
+3, 0.25
+4, 0.23
+5, 0.25
+
+ServiceDistribution_Server95
+2, 0.28
+3, 0.23
+4, 0.24
+5, 0.25
+
+ServiceDistribution_Server96
+2, 0.26
+3, 0.25
+4, 0.23
+5, 0.26
+
+ServiceDistribution_Server97
+2, 0.25
+3, 0.24
+4, 0.25
+5, 0.26
+
+ServiceDistribution_Server98
+2, 0.30
+3, 0.26
+4, 0.22
+5, 0.22
+
+ServiceDistribution_Server99
+2, 0.29
+3, 0.25
+4, 0.24
+5, 0.22
+
+ServiceDistribution_Server100
+2, 0.27
+3, 0.23
+4, 0.25
+5, 0.25
