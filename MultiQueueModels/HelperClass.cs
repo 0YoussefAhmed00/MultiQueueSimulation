@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,107 +33,105 @@ namespace MultiQueueModels
                 return x.ID.CompareTo(y.ID);
             }
         }
-        public class ServerUtilizationComparer : IComparer<Server>
+        public static void Swap<T>(List<T> list, int indexA, int indexB)
         {
-            public int Compare(Server x, Server y)
-            {
-                // Compare based on Utilization for least utilized
-                return x.TotalWorkingTime.CompareTo(y.TotalWorkingTime);
-            }
+            T temp = list[indexA];
+            list[indexA] = list[indexB];
+            list[indexB] = temp;
         }
-        public static void Swap<T>(ICollection<T> collection, int indexA, int indexB)
+        public interface IServerCollection
         {
-            if (collection is List<T> list)
-            {
-                T temp = list[indexA];
-                list[indexA] = list[indexB];
-                list[indexB] = temp;
-            }
-            else
-            {
-                throw new InvalidOperationException("Collection must implement List<T> for swapping.");
-            }
+            void AddServer(Server server);
+            Server SelectServer();
+            bool IsEmpty { get; }
+            int Count { get; }
         }
 
-        public class IdleServers
+        public class RandomCollection : IServerCollection
         {
-            private ICollection<Server> availableServers;
-
-            public delegate void RegisterServerDelegate(Server s);
-            public delegate Server SelectServerDelegate();
-
-            public readonly RegisterServerDelegate registerServer;
-            public readonly SelectServerDelegate selectServer;
-            private Random random = new Random();
-
-            public bool empty()
+            private List<Server> servers = new List<Server>();
+            private readonly Random random = new Random();
+            public void AddServer(Server server)
             {
-                return availableServers.Count == 0;
+                servers.Add(server);
+                int idxLast = servers.Count - 1;
+                HelperClass.Swap(servers,random.Next(0, idxLast), idxLast);
             }
-
-            public IdleServers(Enums.SelectionMethod selectionMethod)
+            public Server SelectServer()
             {
-                switch (selectionMethod)
-                {
-                    case Enums.SelectionMethod.Random:
-                        availableServers = new List<Server>();
-                        registerServer = (Server s) =>
-                        {
-                            availableServers.Add(s);
-                            HelperClass.Swap(availableServers, random.Next(0, availableServers.Count - 1), availableServers.Count - 1);
-                        };
-                        selectServer = () =>
-                        {
-                            HelperClass.Swap(availableServers, random.Next(0, availableServers.Count - 1), availableServers.Count - 1);
-                            Server selected = availableServers.Last();
-                            if (availableServers is List<Server> list)
-                                list.RemoveAt(list.Count - 1);
-                            return selected;
-                        };
-                        break;
-
-                    default:
-                        registerServer = (Server s) => availableServers.Add(s);
-                        selectServer = () =>
-                        {
-                            Server selected = availableServers.First();
-                            availableServers.Remove(selected);
-                            return selected;
-                        };
-                        if (selectionMethod == Enums.SelectionMethod.HighestPriority)
-                            availableServers = new SortedSet<Server>(new ServerPriorityComparer());
-                        else
-                            availableServers = new SortedSet<Server>(new ServerUtilizationComparer());
-                        break;
-                }
+                int idxLast = servers.Count - 1;
+                Server server = servers[idxLast];
+                servers.RemoveAt(idxLast);
+                return server;
             }
+            public bool IsEmpty => servers.Count == 0;
+            public int Count => servers.Count;
         }
 
-        public static void moveToIdle(ref SortedDictionary<int, List<Server>> sortedFinished, ref KeyValuePair<int, List<Server>> keyValue, ref IdleServers idleServers)
+        public class PriorityCollection: IServerCollection
         {
-            List<Server> serverList = keyValue.Value;
-            while (serverList.Count > 0)
+            private SortedSet<Server> servers = new SortedSet<Server>(new ServerPriorityComparer());
+            public void AddServer(Server server) => servers.Add(server);
+            public Server SelectServer()
             {
-                Server server = serverList.Last();
-                serverList.RemoveAt(serverList.Count - 1);
-                idleServers.registerServer(server);
+                Server server = servers.First();
+                servers.Remove(server);
+                return server;
+            }
+            public bool IsEmpty => servers.Count == 0;
+            public int Count => servers.Count;
+        }
+        public class UtillizationCollection: IServerCollection
+        {
+            private SortedDictionary<int, Queue<Server>> servers = new SortedDictionary<int, Queue<Server>>();
+            private int count = 0;
+            public void AddServer(Server server)
+            {
+                int priority = server.TotalWorkingTime;
+                Queue<Server> serverList = servers.TryGetValue(priority, out var existingList) ? existingList : servers[priority] = new Queue<Server>();
+                serverList.Enqueue(server);
+                count++;
+            }
+
+            public Server SelectServer()
+            {
+                KeyValuePair<int, Queue<Server>> p = servers.First();
+                int workingTime = p.Key;
+                Queue<Server> q = p.Value;
+                Server server = q.Dequeue();
+                if (q.Count == 0)
+                    servers.Remove(workingTime);
+                count--;
+                return server;
+            }
+            public bool IsEmpty => count==0;
+            public int Count => count;
+        }
+
+        public static void moveToIdle(ref SortedDictionary<int, Queue<Server>> sortedFinished, ref KeyValuePair<int, Queue<Server>> keyValue, ref IServerCollection idleServers)
+        {
+            Queue<Server> serverQ = keyValue.Value;
+            while (serverQ.Count > 0)
+            {
+                Server server = serverQ.Dequeue();
+                idleServers.AddServer(server);
             }
             sortedFinished.Remove(keyValue.Key);
         }
-        public static void AssignCustomerToServer(ref SimulationCase customer, ref SortedDictionary<int, List<Server>> sortedFinished, ref IdleServers idleServers)
+        public static void AssignCustomerToServer(ref SimulationCase customer, ref SortedDictionary<int, Queue<Server>> sortedFinishedTime, ref IServerCollection idleServers)
         {
-            while (sortedFinished.Count > 0)
+            while (sortedFinishedTime.Count > 0)
             {
-                KeyValuePair<int, List<Server>> keyValue = sortedFinished.First();
-                if (keyValue.Key > customer.ArrivalTime)
+                KeyValuePair<int, Queue<Server>> TimeServers = sortedFinishedTime.First();
+                if (TimeServers.Key > customer.ArrivalTime)
                 {
-                    if (idleServers.empty())
-                        HelperClass.moveToIdle(ref sortedFinished, ref keyValue, ref idleServers);
+                    if (idleServers.IsEmpty)
+                        HelperClass.moveToIdle(ref sortedFinishedTime, ref TimeServers, ref idleServers);
                     break;
                 }
-                HelperClass.moveToIdle(ref sortedFinished, ref keyValue, ref idleServers);
+                HelperClass.moveToIdle(ref sortedFinishedTime, ref TimeServers, ref idleServers);
             }
-            Server server = idleServers.selectServer();
+            Server server = idleServers.SelectServer();
             customer.AssignedServer = server;
             customer.ServiceTime = HelperClass.getTime(server.TimeDistribution, customer.RandomService);
             customer.StartTime = Math.Max(customer.ArrivalTime, customer.AssignedServer.FinishTime);
@@ -141,9 +141,9 @@ namespace MultiQueueModels
             server.TotalWorkingTime += customer.ServiceTime;
             server.FinishTime = customer.EndTime;
             server.TotalNumberOfCustomers += 1;
-            if (!sortedFinished.ContainsKey(server.FinishTime))
-                sortedFinished[server.FinishTime] = new List<Server>();  
-            sortedFinished[server.FinishTime].Add(server);
+            if (!sortedFinishedTime.ContainsKey(server.FinishTime))
+                sortedFinishedTime[server.FinishTime] = new Queue<Server>();  
+            sortedFinishedTime[server.FinishTime].Enqueue(server);
         }
     }
 }
