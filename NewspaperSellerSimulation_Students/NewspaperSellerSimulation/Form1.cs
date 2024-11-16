@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ namespace NewspaperSellerSimulation
 
         private void browseButton_Click(object sender, EventArgs e)
         {
+            simulationSystem = new SimulationSystem();
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*",
@@ -40,6 +42,13 @@ namespace NewspaperSellerSimulation
                 // read the file
                 string[] lines = System.IO.File.ReadAllLines(filePath);
                 // loop through the file content
+                string s = "";
+                for (int  i = 0;  i < lines.Length;  i++)
+                {
+                    s += lines[i] + "  ";
+                }
+                testText.Text = s;
+
                 for (int i = 0; i < lines.Length; i++)
                 {
                     string line = lines[i].Trim();
@@ -64,50 +73,66 @@ namespace NewspaperSellerSimulation
                     break;
 
                 case "PurchasePrice":
-                    simulationSystem.PurchasePrice = int.Parse(lines[++index].Trim());
+                    simulationSystem.PurchasePrice = decimal.Parse(lines[++index].Trim());
                     break;
 
                 case "ScrapPrice":
-                    simulationSystem.ScrapPrice = int.Parse(lines[++index].Trim());
+                    simulationSystem.ScrapPrice = decimal.Parse(lines[++index].Trim());
                     break;
                 case "SellingPrice":
-                    simulationSystem.SellingPrice = int.Parse(lines[++index].Trim());
+                    simulationSystem.SellingPrice = decimal.Parse(lines[++index].Trim());
                     break;
                 case "DayTypeDistributions":
                     List<DayTypeDistribution> L = simulationSystem.DayTypeDistributions;
                     ParseDayTypeDistribution(lines, ref index, ref L);
                     break;
 
-                default:
-                    if (line.StartsWith("ServiceDistribution_Server"))
+                case "DemandDistributions":
+       
+                    List<DemandDistribution> distributions = new List<DemandDistribution>();
+                    index++;
+                    for (int i = 0; i < lines.Length - index; i++)
                     {
-                        int id = int.Parse(line.Substring(26));
-                        //DemandDistribution newDistrib = new DemandDistribution(id);
-                        //simulationSystem.DemandDistributions.Add(newDistrib);
-                        //ParseDemandDistribution(lines, ref index, ref newServer.TimeDistribution);
+                        string[] parts = lines[index].Split(',');
+                        List<DayTypeDistribution> types = new List<DayTypeDistribution>();
+                        DemandDistribution distribution = new DemandDistribution();
+                        
+                        distribution.Demand = int.Parse(parts[0]);
+                        for (int j = 1; j < parts.Length ; j++) {
+                            DayTypeDistribution type = new DayTypeDistribution();
+                            type.DayType = (Enums.DayType)(j-1);
+                            type.Probability = decimal.Parse(parts[j]);
+                            types.Add(type); 
+                        }
+                        distribution.DayTypeDistributions = types;
+                        distributions.Add(distribution);
                     }
+                    simulationSystem.DemandDistributions = distributions;
+                    
                     break;
             }
         }
-        private void ParseDayTypeDistribution(string[] lines, ref int index, ref List<DayTypeDistribution> list)
+
+        private List<int> ParseDayTypeDistribution(string[] lines, ref int index, ref List<DayTypeDistribution> list, int inc = 0)
         {
-
-
+            List<int> demands = new List<int>(); 
             int startRange = 1, endRange;
-            while (++index < lines.Length && lines[index].Contains(","))
+            while (++(index) < lines.Length && lines[index].Contains(","))
             {
                 string[] parts = lines[index].Split(',');
-                decimal[] probablites = new decimal[4];
-                decimal[] comulaitve = new decimal[4];
-                comulaitve[0] = 0;
+                decimal[] probabilities = new decimal[4];
+                decimal[] cumulative = new decimal[4];
+                cumulative[0] = 0;
+                if (inc != 0) 
+                    demands.Add(int.Parse(parts[0]));
                 for (int i = 1; i<4; i++)
                 {
-                    probablites[i-1] = decimal.Parse(parts[i-1].Trim());
-                    comulaitve[i] += comulaitve[i - 1];
+                    probabilities[i-1] = decimal.Parse(parts[i-1 + inc].Trim());
+                    cumulative[i] = cumulative[i-1] + probabilities[i-1];
                 }
 
                 for (int i = 0; i < 3; i++) {
-                    endRange = (int)(comulaitve[i + 1] * 100);
+                    endRange = (int)(cumulative[i + 1] * 100);
                     Enums.DayType type = Enums.DayType.Good;
                     switch (i)
                     {
@@ -119,29 +144,13 @@ namespace NewspaperSellerSimulation
                             break;
                         default:break;
                     }
-                    list.Add(new DayTypeDistribution(type, probablites[i], comulaitve[i+1], startRange, endRange));
+                    list.Add(new DayTypeDistribution(type, probabilities[i], cumulative[i+1], startRange, endRange));
                     startRange = endRange + 1;
                 }
 
             }
-            index--; // Step back to allow the main loop to process correctly
-        }
-
-        private void ParseDemandDistribution(string[] lines, ref int index, ref List<DayTypeDistribution> list)
-        {
-
-
-            int startRange = 1, endRange;
-            while (++index < lines.Length && lines[index].Contains(","))
-            {
-                string[] parts = lines[index].Split(',');
-                decimal[] probablites = new decimal[4];
-                decimal[] comulaitve = new decimal[4];
-                
-                
-
-            }
-            index--; // Step back to allow the main loop to process correctly
+            index--;
+            return demands;
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -162,6 +171,11 @@ namespace NewspaperSellerSimulation
         private void runButton_click(object sender, EventArgs e)
         {
             dataTable.Visible = true;
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
