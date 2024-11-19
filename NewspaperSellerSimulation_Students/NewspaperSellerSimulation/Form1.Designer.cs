@@ -31,8 +31,8 @@
             this.BrowseButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
-            this.dataTable = new System.Windows.Forms.DataGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.dataTable)).BeginInit();
+            this.outputGrid = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.outputGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // BrowseButton
@@ -68,32 +68,32 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.runButton_click);
             // 
-            // dataTable
+            // outputGrid
             // 
-            this.dataTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataTable.Location = new System.Drawing.Point(213, 117);
-            this.dataTable.Name = "dataTable";
-            this.dataTable.RowHeadersWidth = 51;
-            this.dataTable.RowTemplate.Height = 24;
-            this.dataTable.Size = new System.Drawing.Size(1178, 585);
-            this.dataTable.TabIndex = 13;
-            this.dataTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            this.outputGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.outputGrid.Location = new System.Drawing.Point(213, 117);
+            this.outputGrid.Name = "outputGrid";
+            this.outputGrid.RowHeadersWidth = 51;
+            this.outputGrid.RowTemplate.Height = 24;
+            this.outputGrid.Size = new System.Drawing.Size(1178, 585);
+            this.outputGrid.TabIndex = 13;
+            this.outputGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.InactiveCaption;
-            this.ClientSize = new System.Drawing.Size(1485, 745);
+            this.ClientSize = new System.Drawing.Size(1485, 867);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.BrowseButton);
-            this.Controls.Add(this.dataTable);
+            this.Controls.Add(this.outputGrid);
             this.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.Name = "Form1";
             this.Text = "News Paper Seller";
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dataTable)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.outputGrid)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -104,6 +104,6 @@
         private System.Windows.Forms.Button BrowseButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.DataGridView dataTable;
+        private System.Windows.Forms.DataGridView outputGrid;
     }
 }

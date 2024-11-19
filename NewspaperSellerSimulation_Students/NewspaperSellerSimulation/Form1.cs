@@ -21,7 +21,7 @@ namespace NewspaperSellerSimulation
         public Form1()
         {
             InitializeComponent();
-            dataTable.Visible = false;
+            outputGrid.Visible = false;
         }
 
         private void browseButton_Click(object sender, EventArgs e)
@@ -47,7 +47,7 @@ namespace NewspaperSellerSimulation
                 {
                     s += lines[i] + "  ";
                 }
-                testText.Text = s;
+                //testText.Text = s;
 
                 for (int i = 0; i < lines.Length; i++)
                 {
@@ -91,9 +91,9 @@ namespace NewspaperSellerSimulation
        
                     List<DemandDistribution> distributions = new List<DemandDistribution>();
                     index++;
-                    for (int i = 0; i < lines.Length - index; i++)
+                    for (int i = index; i < lines.Length; i++)
                     {
-                        string[] parts = lines[index].Split(',');
+                        string[] parts = lines[i].Split(',');
                         List<DayTypeDistribution> types = new List<DayTypeDistribution>();
                         DemandDistribution distribution = new DemandDistribution();
                         
@@ -101,10 +101,14 @@ namespace NewspaperSellerSimulation
                         for (int j = 1; j < parts.Length ; j++) {
                             DayTypeDistribution type = new DayTypeDistribution();
                             type.DayType = (Enums.DayType)(j-1);
-                            type.Probability = decimal.Parse(parts[j]);
+                            if (parts[j] != " 0.00")
+                                type.Probability = decimal.Parse(parts[j]);
+                            else
+                                type.Probability = decimal.Parse("100.00"); 
                             types.Add(type); 
                         }
                         distribution.DayTypeDistributions = types;
+                        distribution.setRanges();
                         distributions.Add(distribution);
                     }
                     simulationSystem.DemandDistributions = distributions;
@@ -167,10 +171,57 @@ namespace NewspaperSellerSimulation
         {
 
         }
+        private void initializeGridView(ref DataGridView dgview, ref List<String> cols)
+        {
+            // Set header appearance (background color, font, etc.)
+            dgview.EnableHeadersVisualStyles = false;
+            dgview.ColumnHeadersDefaultCellStyle.BackColor = Color.SteelBlue;
+            dgview.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgview.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 10, FontStyle.Bold);
+            dgview.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgview.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            dgview.ColumnHeadersHeight = 60; // Increase the height of the header
+            // Optional: Set the row style to alternate colors
+            dgview.RowsDefaultCellStyle.BackColor = Color.White;
+            dgview.AlternatingRowsDefaultCellStyle.BackColor = Color.LightGray;
+
+            // Make the DataGridView read-only to prevent user input
+            dgview.ReadOnly = true;
+            // Configure DataGridView columns
+            dgview.Columns.Clear();
+            dgview.Rows.Clear();
+            foreach (String col in cols)
+            {
+                dgview.Columns.Add(col, col);
+            }
+            dgview.DefaultCellStyle.Font = new Font("Arial", 14, FontStyle.Regular);
+            dgview.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 12, FontStyle.Bold);
+            dgview.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dgview.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dgview.RowHeadersVisible = false;
+            foreach (DataGridViewColumn column in dgview.Columns)
+            {
+                column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            }
+        }
 
         private void runButton_click(object sender, EventArgs e)
         {
-            dataTable.Visible = true;
+            outputGrid.Visible = true;
+            simulationSystem.getSimulationTable();
+            outputGrid.Columns.Clear();
+            outputGrid.Rows.Clear();
+            //outputGrid.Show();
+            List<String> outputCols = new List<String> { "Day", "Random News Paper Type", "News Paper Type",
+                "Random Demand", "Demand", "Sales Profit", "Lost Profit", "Scrap Profit", "Daily Profit"};
+
+            initializeGridView(ref outputGrid, ref outputCols);
+            foreach (SimulationCase row in simulationSystem.SimulationTable)
+            {
+                outputGrid.Rows.Add(row.DayNo, row.RandomNewsDayType, row.NewsDayType, row.RandomDemand,
+                    row.Demand, row.SalesProfit, row.LostProfit, row.ScrapProfit, row.DailyNetProfit);
+            }
+
         }
 
         private void label2_Click(object sender, EventArgs e)

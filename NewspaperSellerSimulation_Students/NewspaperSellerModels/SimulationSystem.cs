@@ -15,6 +15,7 @@ namespace NewspaperSellerModels
             SimulationTable = new List<SimulationCase>();
             PerformanceMeasures = new PerformanceMeasures();
         }
+
         ///////////// INPUTS /////////////
         public int NumOfNewspapers { get; set; }
         public int NumOfRecords { get; set; }
@@ -25,8 +26,82 @@ namespace NewspaperSellerModels
         public List<DayTypeDistribution> DayTypeDistributions { get; set; }
         public List<DemandDistribution> DemandDistributions { get; set; }
 
+        private int day = 1;
+
+        Random random = new Random();
+
+
+
         ///////////// OUTPUTS /////////////
         public List<SimulationCase> SimulationTable { get; set; }
         public PerformanceMeasures PerformanceMeasures { get; set; }
+
+        // -----
+        #region calculating simulation cases
+        private Enums.DayType getDayType(int type)
+        {
+            Enums.DayType t = Enums.DayType.Good;
+            foreach (var d in DayTypeDistributions)
+            {
+                if(type <= d.MaxRange && type >= d.MinRange)
+                {
+                    t = d.DayType; 
+                    break;
+                }
+            }
+            return t;
+        }
+
+        private int getDemand(int n, Enums.DayType type)
+        {
+     
+            for (int i = 0; i<DemandDistributions.Count; i++)
+            {
+                int min = DemandDistributions[i].DayTypeDistributions[(int)type].MinRange;
+                int max = DemandDistributions[i].DayTypeDistributions[(int)type].MaxRange;
+                if(n >= min && n <= max)
+                    return DemandDistributions[i].Demand;
+            }
+
+            return -1;
+        }
+
+        private SimulationCase getSimulationCase()
+        {
+            int demand = random.Next(1, 101);
+            int type = random.Next(1, 101);
+            SimulationCase tmp = new SimulationCase();
+            tmp.DayNo = day;
+            tmp.RandomNewsDayType = type;
+            tmp.NewsDayType = getDayType(type);
+            tmp.RandomDemand = demand;
+            tmp.Demand = getDemand(demand, tmp.NewsDayType);
+            tmp.SetScrap_Lost_Profit(ScrapPrice, NumOfNewspapers, PurchasePrice);
+            tmp.SetSalesProfit(PurchasePrice, NumOfNewspapers);
+            tmp.SetDailyNetProfit();
+            tmp.SetDailyCost(PurchasePrice, NumOfNewspapers);
+            day++;
+            return tmp;
+        }
+
+        public void getSimulationTable()
+        {
+            PerformanceMeasures.TotalNetProfit = 0;
+            PerformanceMeasures.TotalScrapProfit = 0;
+            PerformanceMeasures.TotalLostProfit = 0;
+            PerformanceMeasures.TotalSalesProfit = 0;
+            PerformanceMeasures.TotalCost = 0;
+            for (int i = 0; i < NumOfRecords; i++)
+            {
+                SimulationCase simulationCase = getSimulationCase();
+                SimulationTable.Add(simulationCase);
+                PerformanceMeasures.TotalNetProfit += simulationCase.DailyNetProfit;
+                PerformanceMeasures.TotalScrapProfit += simulationCase.ScrapProfit;
+                PerformanceMeasures.TotalLostProfit += simulationCase.LostProfit;
+                PerformanceMeasures.TotalSalesProfit += simulationCase.SalesProfit;
+                PerformanceMeasures.TotalCost += simulationCase.DailyCost;
+            }
+        }
+        #endregion
     }
 }
