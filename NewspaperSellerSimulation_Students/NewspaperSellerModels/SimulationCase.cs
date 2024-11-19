@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//using static NewspaperSellerModels.PerformanceMeasures;
+
 namespace NewspaperSellerModels
 {
     public class SimulationCase
@@ -19,13 +21,13 @@ namespace NewspaperSellerModels
         public decimal ScrapProfit { get; set; }
         public decimal DailyNetProfit { get; set; }
 
-        public void SetSalesProfit(decimal purchasePrice, int newsPaperNo)
+        public void SetSalesProfit(decimal sellingPrice, int newsPaperNo)
         {
             int tmp = newsPaperNo - Demand;
             if (tmp < 0)
-                SalesProfit = newsPaperNo * purchasePrice;
+                SalesProfit = newsPaperNo * sellingPrice;
             else
-                SalesProfit = tmp * purchasePrice;
+                SalesProfit = Demand * sellingPrice;
 
 
         }
@@ -34,17 +36,21 @@ namespace NewspaperSellerModels
             DailyCost = (cost * newsPaperNo);
         }
 
-        public void SetScrap_Lost_Profit(decimal scrapPrice, int newsPaperNo, decimal purchasePrice) {
+        public void SetScrap_Lost_Profit(decimal scrapPrice, int newsPaperNo, decimal purchasePrice, decimal sellingPrice, ref int moreDemandDays,ref int unsoldPaperDays) {
             int tmp = newsPaperNo - Demand;
             
             if (tmp > 0){
                 ScrapProfit = (tmp * scrapPrice);
-                LostProfit = 0; 
+                LostProfit = 0;
+                unsoldPaperDays++;
+
             }
             else if (tmp < 0)
             {
                 ScrapProfit = 0;
-                LostProfit = (tmp * -1) * (purchasePrice - scrapPrice);
+                LostProfit = (tmp * -1) * (sellingPrice - purchasePrice);
+                moreDemandDays++;
+
             }
             else{
                 ScrapProfit = 0; 

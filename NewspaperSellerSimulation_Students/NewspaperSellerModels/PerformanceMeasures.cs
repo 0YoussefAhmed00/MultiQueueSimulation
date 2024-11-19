@@ -15,5 +15,8 @@ namespace NewspaperSellerModels
         public decimal TotalNetProfit { get; set; }
         public int DaysWithMoreDemand { get; set; }
         public int DaysWithUnsoldPapers { get; set; }
+
+
+
     }
 }

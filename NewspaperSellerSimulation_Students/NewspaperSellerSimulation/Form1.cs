@@ -22,6 +22,11 @@ namespace NewspaperSellerSimulation
         {
             InitializeComponent();
             outputGrid.Visible = false;
+            unsoldNumberText.Visible = false;
+            unsoldText.Visible = false;
+            excessDeamndText.Visible = false;
+            excessPaperNumber.Visible = false;
+            testText.Visible = false;
         }
 
         private void browseButton_Click(object sender, EventArgs e)
@@ -88,7 +93,7 @@ namespace NewspaperSellerSimulation
                     break;
 
                 case "DemandDistributions":
-       
+                    DemandDistribution.clearRanges();
                     List<DemandDistribution> distributions = new List<DemandDistribution>();
                     index++;
                     for (int i = index; i < lines.Length; i++)
@@ -205,6 +210,11 @@ namespace NewspaperSellerSimulation
             }
         }
 
+        private void clearData()
+        {
+
+        }
+
         private void runButton_click(object sender, EventArgs e)
         {
             outputGrid.Visible = true;
@@ -221,10 +231,31 @@ namespace NewspaperSellerSimulation
                 outputGrid.Rows.Add(row.DayNo, row.RandomNewsDayType, row.NewsDayType, row.RandomDemand,
                     row.Demand, row.SalesProfit, row.LostProfit, row.ScrapProfit, row.DailyNetProfit);
             }
+            PerformanceMeasures p = simulationSystem.PerformanceMeasures;
+            outputGrid.Rows.Add("", "", "", "",
+                 "", p.TotalSalesProfit, p.TotalLostProfit, p.TotalScrapProfit, p.TotalNetProfit);
+
+            testText.Visible = true;
+            string result = TestingManager.Test(simulationSystem, Constants.FileNames.TestCase3);
+            testText.Text = result;
+
+
+            unsoldNumberText.Visible = true;
+            unsoldText.Visible = true;
+            excessDeamndText.Visible = true;
+            excessPaperNumber.Visible = true;
+        
+            excessPaperNumber.Text = $"{simulationSystem.PerformanceMeasures.DaysWithMoreDemand}";
+            unsoldNumberText.Text = $"{simulationSystem.PerformanceMeasures.DaysWithUnsoldPapers}";
 
         }
 
         private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click_1(object sender, EventArgs e)
         {
 
         }

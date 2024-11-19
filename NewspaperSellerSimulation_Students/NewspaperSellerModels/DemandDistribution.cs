@@ -20,6 +20,16 @@ namespace NewspaperSellerModels
         public static int poorStart = 1, poorEnd = 0;
 
         #region demand ranges
+
+        public static void clearRanges()
+        {
+            goodEnd = 0;
+            fairEnd = 0;
+            poorEnd = 0;
+            goodStart = 1;
+            poorStart = 1;
+            fairStart = 1;
+        }
         public void setRanges()
         {
 

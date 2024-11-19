@@ -17,12 +17,13 @@ namespace MultiQueueSimulation
         static void Main()
         {
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetCompatibleTextRenderingDefault(false);   
 
             SimulationSystem system = new SimulationSystem();
             Application.Run(new Form1());
-/*            string result = TestingManager.Test(system, Constants.FileNames.TestCase1);
-            MessageBox.Show(result);
-*/        }
+            //string result = TestingManager.Test(system, Constants.FileNames.TestCase1);
+            //MessageBox.Show(result);
+
+       }
     }
 }

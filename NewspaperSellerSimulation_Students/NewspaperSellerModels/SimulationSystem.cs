@@ -32,6 +32,7 @@ namespace NewspaperSellerModels
 
 
 
+
         ///////////// OUTPUTS /////////////
         public List<SimulationCase> SimulationTable { get; set; }
         public PerformanceMeasures PerformanceMeasures { get; set; }
@@ -66,6 +67,7 @@ namespace NewspaperSellerModels
             return -1;
         }
 
+
         private SimulationCase getSimulationCase()
         {
             int demand = random.Next(1, 101);
@@ -75,17 +77,22 @@ namespace NewspaperSellerModels
             tmp.RandomNewsDayType = type;
             tmp.NewsDayType = getDayType(type);
             tmp.RandomDemand = demand;
+            int a = PerformanceMeasures.DaysWithMoreDemand;
+            int b = PerformanceMeasures.DaysWithUnsoldPapers;
             tmp.Demand = getDemand(demand, tmp.NewsDayType);
-            tmp.SetScrap_Lost_Profit(ScrapPrice, NumOfNewspapers, PurchasePrice);
-            tmp.SetSalesProfit(PurchasePrice, NumOfNewspapers);
-            tmp.SetDailyNetProfit();
+            tmp.SetScrap_Lost_Profit(ScrapPrice, NumOfNewspapers, PurchasePrice, SellingPrice, ref a, ref b);
+            PerformanceMeasures.DaysWithMoreDemand = a;
+            PerformanceMeasures.DaysWithUnsoldPapers = b;
+            tmp.SetSalesProfit(SellingPrice, NumOfNewspapers);
             tmp.SetDailyCost(PurchasePrice, NumOfNewspapers);
+            tmp.SetDailyNetProfit();
             day++;
             return tmp;
         }
 
         public void getSimulationTable()
         {
+            day = 0;
             PerformanceMeasures.TotalNetProfit = 0;
             PerformanceMeasures.TotalScrapProfit = 0;
             PerformanceMeasures.TotalLostProfit = 0;
