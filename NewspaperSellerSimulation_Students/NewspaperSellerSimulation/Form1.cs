@@ -17,10 +17,10 @@ namespace NewspaperSellerSimulation
     public partial class Form1 : Form
     {
         SimulationSystem simulationSystem;
-        string filaPath;
         public Form1()
         {
             InitializeComponent();
+            simulationSystem = new SimulationSystem();
             outputGrid.Visible = false;
             unsoldNumberText.Visible = false;
             unsoldText.Visible = false;
@@ -31,7 +31,7 @@ namespace NewspaperSellerSimulation
 
         private void browseButton_Click(object sender, EventArgs e)
         {
-            simulationSystem = new SimulationSystem();
+            simulationSystem.clearData();
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*",
@@ -43,7 +43,7 @@ namespace NewspaperSellerSimulation
              
                 string filePath = openFileDialog.FileName;
 
-                filaPath = System.IO.Path.GetFileName(filePath);
+                simulationSystem.checkTestCase = System.IO.Path.GetFileName(filePath);
                 // read the file
                 string[] lines = System.IO.File.ReadAllLines(filePath);
                 // loop through the file content
@@ -210,11 +210,6 @@ namespace NewspaperSellerSimulation
             }
         }
 
-        private void clearData()
-        {
-
-        }
-
         private void runButton_click(object sender, EventArgs e)
         {
             outputGrid.Visible = true;
@@ -235,11 +230,6 @@ namespace NewspaperSellerSimulation
             outputGrid.Rows.Add("", "", "", "",
                  "", p.TotalSalesProfit, p.TotalLostProfit, p.TotalScrapProfit, p.TotalNetProfit);
 
-            testText.Visible = true;
-            string result = TestingManager.Test(simulationSystem, Constants.FileNames.TestCase3);
-            testText.Text = result;
-
-
             unsoldNumberText.Visible = true;
             unsoldText.Visible = true;
             excessDeamndText.Visible = true;
@@ -248,6 +238,14 @@ namespace NewspaperSellerSimulation
             excessPaperNumber.Text = $"{simulationSystem.PerformanceMeasures.DaysWithMoreDemand}";
             unsoldNumberText.Text = $"{simulationSystem.PerformanceMeasures.DaysWithUnsoldPapers}";
 
+            setTestText();
+        }
+
+        private void setTestText()
+        {
+            testText.Visible = true;
+            string result = TestingManager.Test(simulationSystem, simulationSystem.checkTestCase);
+            testText.Text = result;
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -259,5 +257,13 @@ namespace NewspaperSellerSimulation
         {
 
         }
+
+        private void label2_Click_2(object sender, EventArgs e)
+        {
+
+        }
+
+       
+        
     }
 }

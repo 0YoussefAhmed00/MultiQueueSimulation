@@ -30,7 +30,7 @@ namespace NewspaperSellerModels
 
         Random random = new Random();
 
-
+        public string checkTestCase;
 
 
         ///////////// OUTPUTS /////////////
@@ -92,12 +92,8 @@ namespace NewspaperSellerModels
 
         public void getSimulationTable()
         {
-            day = 0;
-            PerformanceMeasures.TotalNetProfit = 0;
-            PerformanceMeasures.TotalScrapProfit = 0;
-            PerformanceMeasures.TotalLostProfit = 0;
-            PerformanceMeasures.TotalSalesProfit = 0;
-            PerformanceMeasures.TotalCost = 0;
+            day = 1;
+
             for (int i = 0; i < NumOfRecords; i++)
             {
                 SimulationCase simulationCase = getSimulationCase();
@@ -110,5 +106,19 @@ namespace NewspaperSellerModels
             }
         }
         #endregion
+        public void clearData()
+        {
+            day = 1;
+            DayTypeDistributions.Clear();
+            SimulationTable.Clear();
+            DemandDistributions.Clear();
+            PerformanceMeasures.TotalNetProfit = 0;
+            PerformanceMeasures.TotalScrapProfit = 0;
+            PerformanceMeasures.TotalLostProfit = 0;
+            PerformanceMeasures.TotalSalesProfit = 0;
+            PerformanceMeasures.TotalCost = 0;
+            PerformanceMeasures.DaysWithMoreDemand = 0;
+            PerformanceMeasures.DaysWithUnsoldPapers = 0;   
+        }
     }
 }

@@ -76,11 +76,11 @@
             // outputGrid
             // 
             this.outputGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.outputGrid.Location = new System.Drawing.Point(258, 117);
+            this.outputGrid.Location = new System.Drawing.Point(275, 117);
             this.outputGrid.Name = "outputGrid";
             this.outputGrid.RowHeadersWidth = 51;
             this.outputGrid.RowTemplate.Height = 24;
-            this.outputGrid.Size = new System.Drawing.Size(1178, 585);
+            this.outputGrid.Size = new System.Drawing.Size(1176, 585);
             this.outputGrid.TabIndex = 13;
             this.outputGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -129,7 +129,7 @@
             // 
             this.testText.AutoSize = true;
             this.testText.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
-            this.testText.Location = new System.Drawing.Point(792, 748);
+            this.testText.Location = new System.Drawing.Point(731, 753);
             this.testText.Name = "testText";
             this.testText.Size = new System.Drawing.Size(72, 24);
             this.testText.TabIndex = 18;
