@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using NewspaperSellerModels;
-//using NewspaperSellerTesting;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
+using InventoryModels;
+using InventoryTesting;
 
-namespace NewspaperSellerSimulation
+namespace InventorySimulation
 {
     public partial class Form1 : Form
     {
@@ -31,7 +29,6 @@ namespace NewspaperSellerSimulation
 
         private void browseButton_Click(object sender, EventArgs e)
         {
-            simulationSystem.clearData();
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*",
@@ -40,15 +37,15 @@ namespace NewspaperSellerSimulation
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-             
+
                 string filePath = openFileDialog.FileName;
 
-                simulationSystem.checkTestCase = System.IO.Path.GetFileName(filePath);
+                //simulationSystem.checkTestCase = System.IO.Path.GetFileName(filePath);
                 // read the file
                 string[] lines = System.IO.File.ReadAllLines(filePath);
                 // loop through the file content
                 string s = "";
-                for (int  i = 0;  i < lines.Length;  i++)
+                for (int i = 0; i < lines.Length; i++)
                 {
                     s += lines[i] + "  ";
                 }
@@ -59,7 +56,7 @@ namespace NewspaperSellerSimulation
                     string line = lines[i].Trim();
                     ParseInputLine(lines, ref i, line);
                 }
-                simulationSystem.UnitProfit = simulationSystem.SellingPrice - simulationSystem.PurchasePrice;
+                //simulationSystem.UnitProfit = simulationSystem.SellingPrice - simulationSystem.PurchasePrice;
                 // Display data in the grid view
                 //viewInput();
             }
@@ -69,97 +66,61 @@ namespace NewspaperSellerSimulation
         {
             switch (line)
             {
-                case "NumOfNewspapers":
-                    simulationSystem.NumOfNewspapers = int.Parse(lines[++index].Trim());
+                case "OrderUpTo":
+                    simulationSystem.OrderUpTo = int.Parse(lines[++index].Trim());
                     break;
 
-                case "NumOfRecords":
-                    simulationSystem.NumOfRecords = int.Parse(lines[++index].Trim());
+                case "ReviewPeriod":
+                    simulationSystem.ReviewPeriod = int.Parse(lines[++index].Trim());
                     break;
 
-                case "PurchasePrice":
-                    simulationSystem.PurchasePrice = decimal.Parse(lines[++index].Trim());
+                case "StartInventoryQuantity":
+                    simulationSystem.StartInventoryQuantity = int.Parse(lines[++index].Trim());
                     break;
 
-                case "ScrapPrice":
-                    simulationSystem.ScrapPrice = decimal.Parse(lines[++index].Trim());
-                    break;
-                case "SellingPrice":
-                    simulationSystem.SellingPrice = decimal.Parse(lines[++index].Trim());
-                    break;
-                case "DayTypeDistributions":
-                    List<DayTypeDistribution> L = simulationSystem.DayTypeDistributions;
-                    ParseDayTypeDistribution(lines, ref index, ref L);
+                case "StartLeadDays":
+                    simulationSystem.StartLeadDays = int.Parse(lines[++index].Trim());
                     break;
 
-                case "DemandDistributions":
-                    DemandDistribution.clearRanges();
-                    List<DemandDistribution> distributions = new List<DemandDistribution>();
-                    index++;
-                    for (int i = index; i < lines.Length; i++)
-                    {
-                        string[] parts = lines[i].Split(',');
-                        List<DayTypeDistribution> types = new List<DayTypeDistribution>();
-                        DemandDistribution distribution = new DemandDistribution();
-                        
-                        distribution.Demand = int.Parse(parts[0]);
-                        for (int j = 1; j < parts.Length ; j++) {
-                            DayTypeDistribution type = new DayTypeDistribution();
-                            type.DayType = (Enums.DayType)(j-1);
-                            if (parts[j] != " 0.00")
-                                type.Probability = decimal.Parse(parts[j]);
-                            else
-                                type.Probability = decimal.Parse("100.00"); 
-                            types.Add(type); 
-                        }
-                        distribution.DayTypeDistributions = types;
-                        distribution.setRanges();
-                        distributions.Add(distribution);
-                    }
-                    simulationSystem.DemandDistributions = distributions;
-                    
+                case "StartOrderQuantity":
+                    simulationSystem.StartOrderQuantity = int.Parse(lines[++index].Trim());
+                    break;
+
+                case "NumberOfDays":
+                    simulationSystem.NumberOfDays = int.Parse(lines[++index].Trim());
+                    break;
+
+                case "DemandDistribution":
+                    List<Distribution> L = simulationSystem.DemandDistribution;
+                    ParseDistribution(lines, ref index, ref L);
+                    break;
+
+                case "LeadDaysDistribution":
+                    List<Distribution> LL = simulationSystem.LeadDaysDistribution;
+                    ParseDistribution(lines, ref index, ref LL);
                     break;
             }
         }
 
-        private List<int> ParseDayTypeDistribution(string[] lines, ref int index, ref List<DayTypeDistribution> list, int inc = 0)
+
+        private void ParseDistribution(string[] lines, ref int index, ref List<Distribution> table)
         {
-            List<int> demands = new List<int>(); 
+
+            // Read lines for the distribution until a new section
+            decimal cumProb = 0;
             int startRange = 1, endRange;
-            while (++(index) < lines.Length && lines[index].Contains(","))
+            while (++index < lines.Length && lines[index].Contains(","))
             {
                 string[] parts = lines[index].Split(',');
-                decimal[] probabilities = new decimal[4];
-                decimal[] cumulative = new decimal[4];
-                cumulative[0] = 0;
-                if (inc != 0) 
-                    demands.Add(int.Parse(parts[0]));
-                for (int i = 1; i<4; i++)
-                {
-                    probabilities[i-1] = decimal.Parse(parts[i-1 + inc].Trim());
-                    cumulative[i] = cumulative[i-1] + probabilities[i-1];
-                }
-
-                for (int i = 0; i < 3; i++) {
-                    endRange = (int)(cumulative[i + 1] * 100);
-                    Enums.DayType type = Enums.DayType.Good;
-                    switch (i)
-                    {
-                        case 1:
-                            type = Enums.DayType.Fair;
-                            break; 
-                        case 2:
-                            type = Enums.DayType.Poor;
-                            break;
-                        default:break;
-                    }
-                    list.Add(new DayTypeDistribution(type, probabilities[i], cumulative[i+1], startRange, endRange));
-                    startRange = endRange + 1;
-                }
-
+                int value = int.Parse(parts[0].Trim());
+                decimal probability = decimal.Parse(parts[1].Trim());
+                cumProb += probability;
+                endRange = (int)(cumProb * 100);
+                if (startRange <= endRange)
+                    table.Add(new Distribution(value, probability, cumProb, startRange, endRange));
+                startRange = endRange + 1;
             }
-            index--;
-            return demands;
+            index--; // Step back to allow the main loop to process correctly
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -217,26 +178,29 @@ namespace NewspaperSellerSimulation
             outputGrid.Columns.Clear();
             outputGrid.Rows.Clear();
             //outputGrid.Show();
-            List<String> outputCols = new List<String> { "Day", "Random News Paper Type", "News Paper Type",
-                "Random Demand", "Demand", "Sales Profit", "Lost Profit", "Scrap Profit", "Daily Profit"};
+            List<String> outputCols = new List<String> { "Day", "Cycle", "Day Within Cycle",
+                "Beginning Env", "Random Digit For Demand", "Demand", "Ending Envintory", "Shortage Quantity",
+                "Order Quantity", "Random Digit For Lead Time", "Lead Time", "Days Untill Order Arrives"};
 
             initializeGridView(ref outputGrid, ref outputCols);
             foreach (SimulationCase row in simulationSystem.SimulationTable)
             {
-                outputGrid.Rows.Add(row.DayNo, row.RandomNewsDayType, row.NewsDayType, row.RandomDemand,
-                    row.Demand, row.SalesProfit, row.LostProfit, row.ScrapProfit, row.DailyNetProfit);
+                outputGrid.Rows.Add(row.Day, row.Cycle, row.DayWithinCycle, row.BeginningInventory,
+                    row.RandomDemand, row.Demand, row.EndingInventory, row.ShortageQuantity, row.OrderQuantity,
+                    row.RandomLeadDays, row.LeadDays, row.ArrivingOrder.DaysUntilOrderArrives);
             }
             PerformanceMeasures p = simulationSystem.PerformanceMeasures;
-            outputGrid.Rows.Add("", "", "", "",
-                 "", p.TotalSalesProfit, p.TotalLostProfit, p.TotalScrapProfit, p.TotalNetProfit);
+            outputGrid.Rows.Add("", "", "",
+                "", "", "", simulationSystem.PerformanceMeasures.EndingInventoryAverage, simulationSystem.PerformanceMeasures.ShortageQuantityAverage,
+                "", "", "", "");
 
             unsoldNumberText.Visible = true;
             unsoldText.Visible = true;
             excessDeamndText.Visible = true;
             excessPaperNumber.Visible = true;
-        
-            excessPaperNumber.Text = $"{simulationSystem.PerformanceMeasures.DaysWithMoreDemand}";
-            unsoldNumberText.Text = $"{simulationSystem.PerformanceMeasures.DaysWithUnsoldPapers}";
+
+            //excessPaperNumber.Text = $"{simulationSystem.PerformanceMeasures.DaysWithMoreDemand}";
+            //unsoldNumberText.Text = $"{simulationSystem.PerformanceMeasures.DaysWithUnsoldPapers}";
 
             setTestText();
         }
@@ -244,8 +208,8 @@ namespace NewspaperSellerSimulation
         private void setTestText()
         {
             testText.Visible = true;
-            //string result = TestingManager.Test(simulationSystem, simulationSystem.checkTestCase);
-            //testText.Text = result;
+            string result = TestingManager.Test(simulationSystem, Constants.FileNames.TestCase2);
+            testText.Text = result;
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -262,8 +226,5 @@ namespace NewspaperSellerSimulation
         {
 
         }
-
-       
-        
     }
 }
