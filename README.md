@@ -46,9 +46,7 @@ Each task demonstrates robust simulation logic, performance evaluation, and user
 ## Technologies
 
 * **Language**: C#
-* **Framework**: .NET Framework 4.5.1
 * **GUI**: Windows Forms
-* **Libraries**: `System`, `System.Windows.Forms`, `System.Collections.Generic`
 * **IDE**: Visual Studio
 
 
